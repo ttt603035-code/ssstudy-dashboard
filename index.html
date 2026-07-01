@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Study Resource Dashboard - Enhanced Pro</title>
+<title>Study Resource Dashboard - Ultimate Pro</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -448,6 +448,111 @@
   .priority-medium{ background:#FEF3C7; color:#B45309; border:1px solid #FDE68A; }
   .priority-low{ background:#E1EFFE; color:#1E429F; border:1px solid #C3D9FF; }
 
+  /* ---- Custom Quantitative Trackers Grid ---- */
+  .tracker-grid{
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:16px;
+  }
+  .tracker-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:16px 18px;
+    box-shadow:var(--shadow);
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    position:relative;
+    overflow:hidden;
+  }
+  .tracker-card:hover{ box-shadow:var(--shadow-hover); border-color:#C4CBD8; }
+  .tracker-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:10px;
+  }
+  .tracker-title-group{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+  }
+  .tracker-title{
+    font-size:15px;
+    font-weight:800;
+    color:var(--ink);
+  }
+  .tracker-unit-label{
+    font-size:11.5px;
+    font-weight:600;
+    color:var(--ink-faint);
+  }
+  .tracker-del{
+    background:none; border:none; color:var(--ink-faint); cursor:pointer; font-size:14px;
+  }
+  .tracker-del:hover{ color:#C24545; }
+
+  .tracker-mid{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+  }
+  .tracker-num{
+    font-size:24px;
+    font-weight:800;
+  }
+  .tracker-pct{
+    font-size:13px;
+    font-weight:700;
+    padding:2px 8px;
+    border-radius:6px;
+    background:#EEF0F6;
+    color:var(--ink-soft);
+  }
+
+  .tracker-bar-bg{
+    height:8px;
+    border-radius:4px;
+    background:#E4E7EE;
+    overflow:hidden;
+  }
+  .tracker-bar-fill{
+    height:100%;
+    border-radius:4px;
+    transition:width .25s ease;
+  }
+
+  .tracker-actions{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-top:2px;
+    padding-top:10px;
+    border-top:1px dashed var(--line);
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .step-btns{
+    display:flex;
+    gap:6px;
+  }
+  .step-btn{
+    font-size:12px;
+    font-weight:700;
+    padding:4px 10px;
+    border-radius:6px;
+    border:1px solid var(--line);
+    background:#F8F9FB;
+    color:var(--ink);
+    cursor:pointer;
+    transition:background .1s ease, transform .08s ease;
+  }
+  .step-btn:hover{ background:#ECEEF4; }
+  .step-btn:active{ transform:scale(.95); }
+  .step-btn.plus{ background:#EEF6F0; border-color:#C4E4CE; color:#2F9155; }
+  .step-btn.plus:hover{ background:#DCEFDF; }
+
   /* ---- resource cards ---- */
   .resource-grid{
     display:grid;
@@ -480,16 +585,17 @@
 
   .res-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-top:4px;}
   .res-title{ font-size:14.5px; font-weight:700; line-height:1.35; }
-  .res-del{
+  
+  .res-tool-btn{
     flex-shrink:0;
     background:none; border:none; cursor:pointer;
     color:var(--ink-faint);
-    font-size:12px;
-    font-weight:600;
+    font-size:13px;
     padding:2px 4px;
     border-radius:6px;
   }
-  .res-del:hover{ color:#C24545; background:#FDF0F0; }
+  .res-tool-btn:hover{ color:var(--ink); background:#F2F4F8; }
+  .res-tool-btn.delete:hover{ color:#C24545; background:#FDF0F0; }
 
   .res-path{
     font-size:11.5px;
@@ -528,7 +634,7 @@
     color:var(--ink);
     background:#F2F3F6;
     border:none;
-    padding:6px 12px;
+    padding:5px 11px;
     border-radius:7px;
     cursor:pointer;
   }
@@ -600,11 +706,12 @@
   .ex-status.pending{ background:#FFF3E0; color:#B4700F; }
   .ex-status.completed{ background:#EAF7EE; color:#2F9155; }
 
-  .ex-del{
+  .ex-tool-btn{
     background:none; border:none; cursor:pointer;
-    color:var(--ink-faint); font-size:16px; padding:4px 6px; border-radius:6px; flex-shrink:0;
+    color:var(--ink-faint); font-size:14px; padding:4px 6px; border-radius:6px; flex-shrink:0;
   }
-  .ex-del:hover{ color:#C24545; background:#FDF0F0; }
+  .ex-tool-btn:hover{ color:var(--ink); background:#F2F4F8; }
+  .ex-tool-btn.delete:hover{ color:#C24545; background:#FDF0F0; }
 
   /* Subtasks Area inside ex-card */
   .subtasks-area{
@@ -918,16 +1025,16 @@
     <div class="top-row">
       <div class="brand">
         <h1>📚 Study Resource Dashboard</h1>
-        <p>Learning Material, Score & Exercise Management with Priority Tracking</p>
+        <p>Full Editable Resources, Prioritized Exercise Bank & Quantitative Trackers</p>
       </div>
       <div class="search-wrap">
         <div class="search-box">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-          <input id="globalSearch" type="text" placeholder="Search resources, notes, exercises or sub-tasks..." />
+          <input id="globalSearch" type="text" placeholder="Search resources, exercises, trackers or sub-tasks..." />
         </div>
       </div>
       <div class="top-actions">
-        <button class="btn btn-ghost btn-small" onclick="resetToSampleData()" title="Reload rich sample data with priorities">✨ Load Sample Data</button>
+        <button class="btn btn-ghost btn-small" onclick="resetToSampleData()" title="Reload rich sample data">✨ Load Sample Data</button>
       </div>
     </div>
     
@@ -938,25 +1045,25 @@
           <span class="label-left"><span class="dot"></span>Total Resources</span>
         </div>
         <div class="value" id="statTotal">0</div>
-        <div class="sub">across English · Chinese · Politic</div>
+        <div class="sub">fully editable knowledge base</div>
       </div>
       
       <!-- Pending Exercises -->
       <div class="stat-card stat-pending">
         <div class="label">
-          <span class="label-left"><span class="dot"></span>Pending Exercises</span>
+          <span class="label-left"><span class="dot"></span>Pending Tasks</span>
         </div>
         <div class="value" id="statPending">0</div>
-        <div class="sub" id="statSubtasksText">sorted by emergency priority</div>
+        <div class="sub" id="statSubtasksText">prioritized emergency list</div>
       </div>
       
       <!-- Completed Exercises -->
       <div class="stat-card stat-done">
         <div class="label">
-          <span class="label-left"><span class="dot"></span>Completed Exercises</span>
+          <span class="label-left"><span class="dot"></span>Completed Tasks</span>
         </div>
         <div class="value" id="statDone">0</div>
-        <div class="sub">keep going strong</div>
+        <div class="sub">exercises & trackers done</div>
       </div>
 
       <!-- COUNTDOWN TIMER (Self changeable) -->
@@ -1012,9 +1119,9 @@
     <!-- Overall Progress -->
     <div class="side-progress">
       <div class="sp-title">Overall Progress Bar</div>
-      <div class="sp-goal"><span>All Tasks & Subtasks</span><span id="totalProgPercent">0%</span></div>
+      <div class="sp-goal"><span>Exercises & Pages/Lessons</span><span id="totalProgPercent">0%</span></div>
       <div class="sp-bar"><div class="sp-fill" id="totalProgFill" style="width:0%;"></div></div>
-      <div class="sp-note" id="totalProgNote">0 of 0 tasks completed</div>
+      <div class="sp-note" id="totalProgNote">0 of 0 units completed</div>
     </div>
   </aside>
 
@@ -1040,10 +1147,78 @@
   </div>
 </div>
 
-<!-- Modal: Add Resource -->
+<!-- Modal: Add / Edit Quantitative Tracker -->
+<div class="modal-overlay" id="trackerModalOverlay">
+  <div class="modal">
+    <h3>🎯 Add Custom Quantitative Tracker</h3>
+    <div class="field">
+      <label>Subject</label>
+      <select id="trSubject">
+        <option value="english">English</option>
+        <option value="chinese">Chinese</option>
+        <option value="politic">Politic</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Tracker Name</label>
+      <input id="trTitle" type="text" placeholder="e.g. 《雅思经典阅读精练200篇》 / 高考网课" />
+    </div>
+    <div class="field">
+      <label>Custom Unit Label (自己命名的单位名称)</label>
+      <input id="trUnit" type="text" placeholder="e.g. Pages (页) / Lessons (课) / Items (道题)" />
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+      <div class="field">
+        <label>Current Completed</label>
+        <input id="trCurrent" type="number" value="0" />
+      </div>
+      <div class="field">
+        <label>Total Goal Number</label>
+        <input id="trTotal" type="number" value="100" />
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('trackerModalOverlay')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitTracker()">Create Tracker</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Edit Quantitative Tracker Number -->
+<div class="modal-overlay" id="editTrackerModalOverlay">
+  <div class="modal">
+    <h3>✏️ Edit Quantitative Tracker</h3>
+    <input type="hidden" id="editTrId" />
+    <div class="field">
+      <label>Tracker Name</label>
+      <input id="editTrTitle" type="text" />
+    </div>
+    <div class="field">
+      <label>Custom Unit Label</label>
+      <input id="editTrUnit" type="text" />
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+      <div class="field">
+        <label>Current Completed Number</label>
+        <input id="editTrCurrent" type="number" />
+      </div>
+      <div class="field">
+        <label>Total Goal Number</label>
+        <input id="editTrTotal" type="number" />
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('editTrackerModalOverlay')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEditedTracker()">Update Progress</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Add / Edit Resource -->
 <div class="modal-overlay" id="resourceModalOverlay">
   <div class="modal">
-    <h3>Add Resource</h3>
+    <h3 id="resModalTitle">Add Resource</h3>
+    <input type="hidden" id="editResId" />
     <div class="field">
       <label>Subject</label>
       <select id="resSubject">
@@ -1070,15 +1245,16 @@
     </div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal('resourceModalOverlay')">Cancel</button>
-      <button class="btn btn-primary" onclick="submitResource()">Add Resource</button>
+      <button class="btn btn-primary" id="resModalSubmitBtn" onclick="submitResource()">Add Resource</button>
     </div>
   </div>
 </div>
 
-<!-- Modal: Add Exercise -->
+<!-- Modal: Add / Edit Exercise -->
 <div class="modal-overlay" id="exerciseModalOverlay">
   <div class="modal">
-    <h3>Add Exercise</h3>
+    <h3 id="exModalTitle">Add Exercise</h3>
+    <input type="hidden" id="editExId" />
     <div class="field">
       <label>Subject</label>
       <select id="exSubject">
@@ -1109,7 +1285,7 @@
     </div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal('exerciseModalOverlay')">Cancel</button>
-      <button class="btn btn-primary" onclick="submitExercise()">Add Exercise</button>
+      <button class="btn btn-primary" id="exModalSubmitBtn" onclick="submitExercise()">Add Exercise</button>
     </div>
   </div>
 </div>
@@ -1146,7 +1322,14 @@
 </div>
 
 <script>
-/* ============ RICH SAMPLE DATA WITH PRIORITY ============ */
+/* ============ RICH SAMPLE DATA ============ */
+const sampleTrackers = [
+  { id:'tr1', subject:'english', title:'📖 《核心考研/雅思核心词汇书5000》阅读与打卡', unit:'Pages (页)', current:65, total:240 },
+  { id:'tr2', subject:'chinese', title:'🎥 历年高考语文高分名师精讲专题课', unit:'Lessons (课时)', current:14, total:32 },
+  { id:'tr3', subject:'politic', title:'⚡ 《肖秀荣考研政治核心1000题》刷题精练', unit:'Questions (道题)', current:320, total:1000 },
+  { id:'tr4', subject:'english', title:'🎧 雅思真实听力真题集 S1-S4 特训精听', unit:'Tests (套题)', current:8, total:24 }
+];
+
 const sampleResources = [
   {id:'r1', subject:'english', title:'IELTS & TOEFL Core Academic Vocabulary 5000', path:'D:/Study/English/IELTS_Academic_Vocab_5000.pdf', tags:['Vocabulary','High-Frequency'], createdAt:'2026-06-25'},
   {id:'r2', subject:'english', title:'Advanced English Grammar Rules & Passive Voice Mastery', path:'D:/Study/English/Advanced_Grammar_Rules.docx', tags:['Grammar','Writing'], createdAt:'2026-06-28'},
@@ -1165,7 +1348,6 @@ const sampleResources = [
 ];
 
 const sampleExercises = [
-  // ENGLISH EXERCISES
   {
     id:'e1', subject:'english', title:'🔥 Advanced Grammar & Cloze Test Simulation', priority:'high', chapter:'Unit 6', dueDate:'2026-07-02', status:'pending',
     subtasks: [
@@ -1196,8 +1378,6 @@ const sampleExercises = [
       { id:'st10', title:'Pass self-dictation test with 95% accuracy', completed:true }
     ]
   },
-
-  // CHINESE EXERCISES
   {
     id:'e5', subject:'chinese', title:'🔥 文言文《苏轼传》重点虚词与段落逐字精译', priority:'high', chapter:'文言文强化', dueDate:'2026-07-03', status:'pending',
     subtasks: [
@@ -1226,8 +1406,6 @@ const sampleExercises = [
       { id:'st18', title:'完成默写试卷易错生僻字纠错', completed:true }
     ]
   },
-
-  // POLITIC EXERCISES
   {
     id:'e9', subject:'politic', title:'🔥 唯物辩证法四大基本规律真题论述大题强化', priority:'high', chapter:'哲学必考章', dueDate:'2026-07-02', status:'pending',
     subtasks: [
@@ -1294,8 +1472,8 @@ let resources = JSON.parse(localStorage.getItem('study_resources_pro')) || sampl
 let exercises = JSON.parse(localStorage.getItem('study_exercises_pro')) || sampleExercises;
 let subjectScores = JSON.parse(localStorage.getItem('study_scores_pro')) || sampleSubjectScores;
 let countdownConfig = JSON.parse(localStorage.getItem('study_countdown_pro')) || sampleCountdown;
+let quantitativeTrackers = JSON.parse(localStorage.getItem('study_trackers_pro')) || sampleTrackers;
 
-// Ensure all exercises have priority if loaded from older localstorage
 exercises.forEach(ex => {
   if(!ex.priority) ex.priority = 'medium';
 });
@@ -1305,14 +1483,16 @@ function saveStateToStorage(){
   localStorage.setItem('study_exercises_pro', JSON.stringify(exercises));
   localStorage.setItem('study_scores_pro', JSON.stringify(subjectScores));
   localStorage.setItem('study_countdown_pro', JSON.stringify(countdownConfig));
+  localStorage.setItem('study_trackers_pro', JSON.stringify(quantitativeTrackers));
 }
 
 function resetToSampleData(){
-  if(confirm("✨ Reset and load rich sample data with Priority Badges, resources and subtasks?")){
+  if(confirm("✨ Reset and load rich sample data?")){
     resources = JSON.parse(JSON.stringify(sampleResources));
     exercises = JSON.parse(JSON.stringify(sampleExercises));
     subjectScores = JSON.parse(JSON.stringify(sampleSubjectScores));
     countdownConfig = JSON.parse(JSON.stringify(sampleCountdown));
+    quantitativeTrackers = JSON.parse(JSON.stringify(sampleTrackers));
     saveStateToStorage();
     render();
   }
@@ -1333,7 +1513,7 @@ let state = {
   filterPriority:'all'
 };
 
-let idCounter = 300;
+let idCounter = 500;
 
 /* ============ HELPERS ============ */
 function escapeHtml(str){
@@ -1367,22 +1547,35 @@ function getPriorityWeight(priority){
 /* ============ PROGRESS & STATS CALCULATIONS ============ */
 function getSubjectProgress(subject){
   const subEx = exercises.filter(e => !subject || e.subject === subject);
-  let totalUnits = 0;
-  let doneUnits = 0;
+  let exTotal = 0;
+  let exDone = 0;
 
   subEx.forEach(ex => {
     const subtasks = ex.subtasks || [];
     if(subtasks.length > 0){
-      totalUnits += subtasks.length;
-      doneUnits += subtasks.filter(st => st.completed).length;
+      exTotal += subtasks.length;
+      exDone += subtasks.filter(st => st.completed).length;
     } else {
-      totalUnits += 1;
-      if(ex.status === 'completed') doneUnits += 1;
+      exTotal += 1;
+      if(ex.status === 'completed') exDone += 1;
     }
   });
 
-  const percent = totalUnits === 0 ? 0 : Math.round((doneUnits / totalUnits) * 100);
-  return { totalUnits, doneUnits, percent };
+  const subTrackers = quantitativeTrackers.filter(t => !subject || t.subject === subject);
+  let trTotal = 0;
+  let trDone = 0;
+  subTrackers.forEach(t => {
+    const tot = Number(t.total) || 0;
+    const cur = Math.min((Number(t.current) || 0), tot);
+    trTotal += tot;
+    trDone += cur;
+  });
+
+  const combinedTotal = exTotal + trTotal;
+  const combinedDone = exDone + trDone;
+  const percent = combinedTotal === 0 ? 0 : Math.round((combinedDone / combinedTotal) * 100);
+
+  return { totalUnits: combinedTotal, doneUnits: combinedDone, percent };
 }
 
 function updateHeaderAndSidebar(){
@@ -1396,7 +1589,7 @@ function updateHeaderAndSidebar(){
   const overall = getSubjectProgress(null);
   document.getElementById('totalProgPercent').textContent = `${overall.percent}%`;
   document.getElementById('totalProgFill').style.width = `${overall.percent}%`;
-  document.getElementById('totalProgNote').textContent = `${overall.doneUnits} of ${overall.totalUnits} tasks & subtasks done`;
+  document.getElementById('totalProgNote').textContent = `${overall.doneUnits} of ${overall.totalUnits} total units done`;
 
   ['english', 'chinese', 'politic'].forEach(subj => {
     const prog = getSubjectProgress(subj);
@@ -1522,11 +1715,49 @@ function onFilterChange(){
   render();
 }
 
+/* ---- Quantitative Tracker Card Render ---- */
+function trackerCard(t){
+  const cur = Number(t.current) || 0;
+  const tot = Number(t.total) || 1;
+  const pct = Math.min(100, Math.round((cur / tot) * 100));
+  const color = t.subject === 'english' ? 'var(--english-deep)' : t.subject === 'chinese' ? 'var(--chinese-deep)' : 'var(--politic-deep)';
+
+  return `
+    <div class="tracker-card">
+      <div class="tracker-top">
+        <div class="tracker-title-group">
+          <span class="ex-subject-tag ${t.subject}" style="align-self:flex-start; margin-bottom:2px;">${subjectMeta[t.subject] ? subjectMeta[t.subject].label : 'General'}</span>
+          <div class="tracker-title">${escapeHtml(t.title)}</div>
+          <div class="tracker-unit-label">Custom Unit: ${escapeHtml(t.unit)}</div>
+        </div>
+        <button class="tracker-del" onclick="deleteTracker('${t.id}')" title="Delete tracker">✕</button>
+      </div>
+
+      <div class="tracker-mid">
+        <div class="tracker-num" style="color:${color};">${cur} <span style="font-size:14px; color:var(--ink-faint); font-weight:600;">/ ${tot} ${escapeHtml(t.unit)}</span></div>
+        <div class="tracker-pct">${pct}%</div>
+      </div>
+
+      <div class="tracker-bar-bg">
+        <div class="tracker-bar-fill" style="width:${pct}%; background:${color};"></div>
+      </div>
+
+      <div class="tracker-actions">
+        <div class="step-btns">
+          <button class="step-btn" onclick="stepTracker('${t.id}', -1)" title="Subtract 1">-1</button>
+          <button class="step-btn plus" onclick="stepTracker('${t.id}', 1)" title="Add 1 step progress">+1</button>
+          <button class="step-btn plus" onclick="stepTracker('${t.id}', 5)" title="Add 5 steps">+5</button>
+          <button class="step-btn plus" onclick="stepTracker('${t.id}', 10)" title="Add 10 steps">+10</button>
+        </div>
+        <button class="btn btn-ghost btn-small" onclick="openEditTrackerModal('${t.id}')">✏️ Set Value</button>
+      </div>
+    </div>
+  `;
+}
+
 /* ---- Dashboard Home ---- */
 function renderDashboardHome(){
   const latestResources = [...resources].sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).slice(0,5);
-  
-  // Sort pending exercises first by High > Medium > Low priority, then by due date
   const urgentExercises = [...exercises]
     .filter(e => e.status === 'pending')
     .sort((a,b) => getPriorityWeight(b.priority) - getPriorityWeight(a.priority) || (a.dueDate||'').localeCompare(b.dueDate||''))
@@ -1539,14 +1770,14 @@ function renderDashboardHome(){
     <div class="page-head">
       <div>
         <h2>🚀 Dashboard Overview</h2>
-        <p>Real-time subject progress, score breakdown & emergency-prioritized exercise bank</p>
+        <p>Fully editable resources & tasks, combined quantitative progress bars & score breakdown</p>
       </div>
     </div>
 
     <!-- Section 1: Subject Progress Bars Overview -->
     <div class="subject-progress-card">
       <div class="section-head" style="margin-bottom:0;">
-        <h3>📊 Subject Progress Bars (Total Progress Overview)</h3>
+        <h3>📊 Combined Subject Progress Bars (Exercises + Custom Pages/Lessons)</h3>
         <span style="font-size:12px; color:var(--ink-soft); font-weight:600;">Overall Progress: ${getSubjectProgress(null).percent}%</span>
       </div>
       <div class="sp-grid">
@@ -1565,7 +1796,7 @@ function renderDashboardHome(){
               </div>
               <div class="sp-big-bar"><div class="sp-big-fill" style="width:${prog.percent}%; background:${color};"></div></div>
               <div style="font-size:11px; color:var(--ink-faint); margin-top:6px; font-weight:600;">
-                ${prog.doneUnits} / ${prog.totalUnits} tasks & subtasks done
+                ${prog.doneUnits} / ${prog.totalUnits} total completed units
               </div>
             </div>
           `;
@@ -1573,7 +1804,16 @@ function renderDashboardHome(){
       </div>
     </div>
 
-    <!-- Section 2: Subject Scores & Clickable Configuration -->
+    <!-- Section 2: Custom Quantitative Trackers (Pages / Lessons / Items) -->
+    <div class="section">
+      <div class="section-head">
+        <h3>🎯 Custom Quantitative Progress Trackers (自己命名页数/课程/题数点按打卡) <span class="count-pill">${quantitativeTrackers.length}</span></h3>
+        <button class="btn btn-primary" onclick="openTrackerModal('english')">+ Add Custom Tracker</button>
+      </div>
+      ${quantitativeTrackers.length ? `<div class="tracker-grid">${quantitativeTrackers.map(t=>trackerCard(t)).join('')}</div>` : `<div class="empty-state">No custom trackers yet. Add one to start counting pages or lessons!</div>`}
+    </div>
+
+    <!-- Section 3: Subject Scores & Clickable Configuration -->
     <div class="section-head">
       <h3>🎯 Subject Score Breakdown (Click card to inspect & configure scores)</h3>
     </div>
@@ -1609,7 +1849,7 @@ function renderDashboardHome(){
       }).join('')}
     </div>
 
-    <!-- Section 3: Priority Action Panels -->
+    <!-- Section 4: Priority Action Panels -->
     <div class="home-grid">
       <div class="home-panel">
         <h4>🔥 Urgent Pending Exercises</h4>
@@ -1667,6 +1907,7 @@ function renderSubjectPage(subject){
 
   let res = resources.filter(r=>r.subject===subject);
   let ex = exercises.filter(e=>e.subject===subject);
+  let tr = quantitativeTrackers.filter(t=>t.subject===subject);
 
   if(state.filterPriority !== 'all'){
     ex = ex.filter(e => e.priority === state.filterPriority);
@@ -1675,7 +1916,6 @@ function renderSubjectPage(subject){
     ex = ex.filter(e=>e.status===state.filterStatus);
   }
 
-  // Sort exercises: pending high priority first
   ex.sort((a,b) => {
     if(a.status !== b.status) return a.status === 'pending' ? -1 : 1;
     return getPriorityWeight(b.priority) - getPriorityWeight(a.priority);
@@ -1689,7 +1929,7 @@ function renderSubjectPage(subject){
       <h2><span class="tag-dot" style="background:${color}"></span>${meta.label} Course Dashboard</h2>
     </div>
 
-    <!-- Subject Score & Progress Header Banner -->
+    <!-- Subject Score & Combined Progress Header Banner -->
     <div class="subject-banner">
       <div class="sb-left">
         <h3>
@@ -1699,7 +1939,7 @@ function renderSubjectPage(subject){
         <p>${meta.tagline}</p>
         <div style="margin-top:10px; width:290px;">
           <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700; margin-bottom:4px;">
-            <span>Subject Progress</span>
+            <span>Combined Progress</span>
             <span style="color:${color};">${prog.percent}%</span>
           </div>
           <div style="height:7px; border-radius:4px; background:#E0E4EE; overflow:hidden;">
@@ -1717,10 +1957,19 @@ function renderSubjectPage(subject){
           <div class="sb-val" style="color:#2F9155;">${sc.targetScore} <span style="font-size:13px; font-weight:600; color:var(--ink-faint);">pts</span></div>
         </div>
         <div class="sb-score-box">
-          <div class="sb-label">Tasks Done</div>
+          <div class="sb-label">Combined Units Done</div>
           <div class="sb-val">${prog.doneUnits} <span style="font-size:13px; font-weight:600; color:var(--ink-faint);">/ ${prog.totalUnits}</span></div>
         </div>
       </div>
+    </div>
+
+    <!-- Quantitative Trackers for this subject -->
+    <div class="section">
+      <div class="section-head">
+        <h3>🎯 ${meta.label} Quantitative Trackers (页数/课时/题目累加进度) <span class="count-pill">${tr.length}</span></h3>
+        <button class="btn btn-primary" onclick="openTrackerModal('${subject}')">+ Add Tracker</button>
+      </div>
+      ${tr.length ? `<div class="tracker-grid">${tr.map(t=>trackerCard(t)).join('')}</div>` : `<div class="empty-state">No quantitative trackers for ${meta.label} yet.</div>`}
     </div>
 
     ${renderFilterBar()}
@@ -1737,7 +1986,7 @@ function renderSubjectPage(subject){
     ${showExercises ? `
     <div class="section">
       <div class="section-head">
-        <h3>Exercise Bank (Prioritized & Sub-tasks) <span class="count-pill">${ex.length}</span></h3>
+        <h3>Exercise Bank (Editable, Prioritized & Sub-tasks) <span class="count-pill">${ex.length}</span></h3>
         <button class="btn btn-primary" onclick="openExerciseModal('${subject}')">+ Add Exercise</button>
       </div>
       ${ex.length ? `<div class="exercise-list">${ex.map(e=>exerciseCard(e)).join('')}</div>` : `<div class="empty-state">No exercises matching filter.</div>`}
@@ -1745,24 +1994,31 @@ function renderSubjectPage(subject){
   `;
 }
 
+/* ---- Editable Resource Card ---- */
 function resourceCard(r){
   return `
     <div class="res-card ${r.subject}">
       <div class="res-top">
         <div class="res-title">${escapeHtml(r.title)}</div>
-        <button class="res-del" onclick="deleteResource('${r.id}')">Delete</button>
+        <div style="display:flex; gap:2px;">
+          <button class="res-tool-btn" onclick="openEditResourceModal('${r.id}')" title="Edit Resource Details">✏️</button>
+          <button class="res-tool-btn delete" onclick="deleteResource('${r.id}')" title="Delete Resource">✕</button>
+        </div>
       </div>
       <div class="res-path">${escapeHtml(r.path || '—')}</div>
       <div class="res-tags">${(r.tags||[]).map(t=>`<span class="pill ${r.subject}">${escapeHtml(t)}</span>`).join('')}</div>
       <div class="res-bottom">
         <span class="res-date">${r.createdAt}</span>
-        <button class="open-btn" onclick="alert('Opening Resource: ' + '${escapeHtml(r.path||'')}')">Open</button>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-ghost btn-small" style="padding:4px 8px;" onclick="openEditResourceModal('${r.id}')">Edit</button>
+          <button class="open-btn" onclick="alert('Opening Resource: ' + '${escapeHtml(r.path||'')}')">Open</button>
+        </div>
       </div>
     </div>
   `;
 }
 
-/* ---- Exercise Card with Priority & Subtasks ---- */
+/* ---- Editable Exercise Card with Priority & Subtasks ---- */
 function exerciseCard(e){
   const subtasks = e.subtasks || [];
   const totalSt = subtasks.length;
@@ -1794,7 +2050,10 @@ function exerciseCard(e){
           </div>
         </div>
         <span class="ex-status ${e.status}">${e.status === 'pending' ? 'Pending' : 'Completed'}</span>
-        <button class="ex-del" onclick="deleteExercise('${e.id}')" title="Delete Exercise">✕</button>
+        <div style="display:flex; align-items:center; gap:2px; flex-shrink:0;">
+          <button class="ex-tool-btn" onclick="openEditExerciseModal('${e.id}')" title="Edit Exercise Details">✏️ Edit</button>
+          <button class="ex-tool-btn delete" onclick="deleteExercise('${e.id}')" title="Delete Exercise">✕</button>
+        </div>
       </div>
 
       <!-- Subtasks area inside Exercise Bank -->
@@ -1827,23 +2086,28 @@ function renderSearchResults(){
   const res = resources.filter(r =>
     matchesSearch(r.title, q) ||
     matchesSearch(r.path||'', q) ||
-    (r.tags||[]).some(t=>matchesSearch(t,q)) ||
-    matchesSearch(subjectMeta[r.subject].label, q)
+    (r.tags||[]).some(t=>matchesSearch(t,q))
   );
   const ex = exercises.filter(e =>
     matchesSearch(e.title, q) ||
     matchesSearch(e.chapter||'', q) ||
-    matchesSearch(subjectMeta[e.subject].label, q) ||
     matchesSearch(e.priority||'', q) ||
     (e.subtasks||[]).some(st => matchesSearch(st.title, q))
+  );
+  const tr = quantitativeTrackers.filter(t =>
+    matchesSearch(t.title, q) || matchesSearch(t.unit, q)
   );
 
   return `
     <div class="page-head">
       <div>
         <h2>🔍 Search Results</h2>
-        <p>Showing matches for "${escapeHtml(q)}" across all resources, exercises & sub-tasks</p>
+        <p>Showing matches for "${escapeHtml(q)}" across all trackers, resources & exercises</p>
       </div>
+    </div>
+    <div class="section">
+      <div class="section-head"><h3>Quantitative Trackers <span class="count-pill">${tr.length}</span></h3></div>
+      ${tr.length ? `<div class="tracker-grid">${tr.map(t=>trackerCard(t)).join('')}</div>` : `<div class="empty-state">No matching trackers.</div>`}
     </div>
     <div class="section">
       <div class="section-head"><h3>Resources <span class="count-pill">${res.length}</span></h3></div>
@@ -1854,6 +2118,72 @@ function renderSearchResults(){
       ${ex.length ? `<div class="exercise-list">${ex.map(e=>exerciseCard(e)).join('')}</div>` : `<div class="empty-state">No matching exercises.</div>`}
     </div>
   `;
+}
+
+/* ============ QUANTITATIVE TRACKER ACTIONS ============ */
+function stepTracker(id, step){
+  const t = quantitativeTrackers.find(x=>x.id===id);
+  if(t){
+    let cur = Number(t.current) || 0;
+    const tot = Number(t.total) || 1;
+    cur = Math.max(0, Math.min(tot, cur + step));
+    t.current = cur;
+  }
+  render();
+}
+
+function deleteTracker(id){
+  quantitativeTrackers = quantitativeTrackers.filter(x=>x.id!==id);
+  render();
+}
+
+function openTrackerModal(subject){
+  document.getElementById('trSubject').value = subject && subjectMeta[subject] ? subject : 'english';
+  document.getElementById('trTitle').value = '';
+  document.getElementById('trUnit').value = '';
+  document.getElementById('trCurrent').value = '0';
+  document.getElementById('trTotal').value = '100';
+  openModal('trackerModalOverlay');
+}
+
+function submitTracker(){
+  const title = document.getElementById('trTitle').value.trim();
+  const unit = document.getElementById('trUnit').value.trim() || 'Pages';
+  const current = Number(document.getElementById('trCurrent').value) || 0;
+  const total = Number(document.getElementById('trTotal').value) || 100;
+  if(!title){ alert('Please enter a tracker name.'); return; }
+  const subject = document.getElementById('trSubject').value;
+
+  quantitativeTrackers.push({
+    id: 'tr' + (idCounter++),
+    subject, title, unit, current, total
+  });
+  closeModal('trackerModalOverlay');
+  render();
+}
+
+function openEditTrackerModal(id){
+  const t = quantitativeTrackers.find(x=>x.id===id);
+  if(!t) return;
+  document.getElementById('editTrId').value = t.id;
+  document.getElementById('editTrTitle').value = t.title;
+  document.getElementById('editTrUnit').value = t.unit;
+  document.getElementById('editTrCurrent').value = t.current;
+  document.getElementById('editTrTotal').value = t.total;
+  openModal('editTrackerModalOverlay');
+}
+
+function saveEditedTracker(){
+  const id = document.getElementById('editTrId').value;
+  const t = quantitativeTrackers.find(x=>x.id===id);
+  if(t){
+    t.title = document.getElementById('editTrTitle').value.trim() || t.title;
+    t.unit = document.getElementById('editTrUnit').value.trim() || 'Units';
+    t.current = Number(document.getElementById('editTrCurrent').value) || 0;
+    t.total = Number(document.getElementById('editTrTotal').value) || 1;
+  }
+  closeModal('editTrackerModalOverlay');
+  render();
 }
 
 /* ============ EXERCISE & SUBTASK ACTIONS ============ */
@@ -1923,6 +2253,110 @@ function deleteExercise(id){
 }
 function deleteResource(id){
   resources = resources.filter(x=>x.id!==id);
+  render();
+}
+
+/* ============ EDIT & ADD RESOURCE CONTROLS ============ */
+function openResourceModal(subject){
+  document.getElementById('editResId').value = '';
+  document.getElementById('resModalTitle').textContent = 'Add Resource';
+  document.getElementById('resModalSubmitBtn').textContent = 'Add Resource';
+  document.getElementById('resSubject').value = subject && subjectMeta[subject] ? subject : 'english';
+  document.getElementById('resTitle').value = '';
+  document.getElementById('resPath').value = '';
+  document.getElementById('resTags').value = '';
+  document.getElementById('resDate').value = todayISO();
+  openModal('resourceModalOverlay');
+}
+
+function openEditResourceModal(id){
+  const r = resources.find(x => x.id === id);
+  if(!r) return;
+  document.getElementById('editResId').value = r.id;
+  document.getElementById('resModalTitle').textContent = '✏️ Edit Resource Details';
+  document.getElementById('resModalSubmitBtn').textContent = 'Save Changes';
+  document.getElementById('resSubject').value = r.subject;
+  document.getElementById('resTitle').value = r.title;
+  document.getElementById('resPath').value = r.path || '';
+  document.getElementById('resTags').value = (r.tags || []).join(', ');
+  document.getElementById('resDate').value = r.createdAt || todayISO();
+  openModal('resourceModalOverlay');
+}
+
+function submitResource(){
+  const editId = document.getElementById('editResId').value;
+  const title = document.getElementById('resTitle').value.trim();
+  if(!title){ alert('Please enter a title.'); return; }
+  const subject = document.getElementById('resSubject').value;
+  const path = document.getElementById('resPath').value.trim();
+  const tags = document.getElementById('resTags').value.split(',').map(t=>t.trim()).filter(Boolean);
+  const createdAt = document.getElementById('resDate').value || todayISO();
+
+  if(editId){
+    const r = resources.find(x => x.id === editId);
+    if(r){
+      r.subject = subject;
+      r.title = title;
+      r.path = path;
+      r.tags = tags;
+      r.createdAt = createdAt;
+    }
+  } else {
+    resources.push({ id:'r'+(idCounter++), subject, title, path, tags, createdAt });
+  }
+  closeModal('resourceModalOverlay');
+  render();
+}
+
+/* ============ EDIT & ADD EXERCISE CONTROLS ============ */
+function openExerciseModal(subject){
+  document.getElementById('editExId').value = '';
+  document.getElementById('exModalTitle').textContent = 'Add Exercise';
+  document.getElementById('exModalSubmitBtn').textContent = 'Add Exercise';
+  document.getElementById('exSubject').value = subject && subjectMeta[subject] ? subject : 'english';
+  document.getElementById('exTitle').value = '';
+  document.getElementById('exPriority').value = 'medium';
+  document.getElementById('exChapter').value = '';
+  document.getElementById('exDue').value = '';
+  openModal('exerciseModalOverlay');
+}
+
+function openEditExerciseModal(id){
+  const e = exercises.find(x => x.id === id);
+  if(!e) return;
+  document.getElementById('editExId').value = e.id;
+  document.getElementById('exModalTitle').textContent = '✏️ Edit Exercise Details';
+  document.getElementById('exModalSubmitBtn').textContent = 'Save Changes';
+  document.getElementById('exSubject').value = e.subject;
+  document.getElementById('exTitle').value = e.title;
+  document.getElementById('exPriority').value = e.priority || 'medium';
+  document.getElementById('exChapter').value = e.chapter || '';
+  document.getElementById('exDue').value = e.dueDate || '';
+  openModal('exerciseModalOverlay');
+}
+
+function submitExercise(){
+  const editId = document.getElementById('editExId').value;
+  const title = document.getElementById('exTitle').value.trim();
+  if(!title){ alert('Please enter a title.'); return; }
+  const subject = document.getElementById('exSubject').value;
+  const priority = document.getElementById('exPriority').value;
+  const chapter = document.getElementById('exChapter').value.trim();
+  const dueDate = document.getElementById('exDue').value;
+
+  if(editId){
+    const e = exercises.find(x => x.id === editId);
+    if(e){
+      e.subject = subject;
+      e.title = title;
+      e.priority = priority;
+      e.chapter = chapter;
+      e.dueDate = dueDate;
+    }
+  } else {
+    exercises.push({ id:'e'+(idCounter++), subject, title, priority, chapter, dueDate, status:'pending', subtasks:[] });
+  }
+  closeModal('exerciseModalOverlay');
   render();
 }
 
@@ -2006,48 +2440,6 @@ function saveScoreConfig(){
   };
 
   closeModal('scoreModalOverlay');
-  render();
-}
-
-/* ---- Resource Modal ---- */
-function openResourceModal(subject){
-  document.getElementById('resSubject').value = subject && subjectMeta[subject] ? subject : 'english';
-  document.getElementById('resTitle').value = '';
-  document.getElementById('resPath').value = '';
-  document.getElementById('resTags').value = '';
-  document.getElementById('resDate').value = todayISO();
-  openModal('resourceModalOverlay');
-}
-function submitResource(){
-  const title = document.getElementById('resTitle').value.trim();
-  if(!title){ alert('Please enter a title.'); return; }
-  const subject = document.getElementById('resSubject').value;
-  const path = document.getElementById('resPath').value.trim();
-  const tags = document.getElementById('resTags').value.split(',').map(t=>t.trim()).filter(Boolean);
-  const createdAt = document.getElementById('resDate').value || todayISO();
-  resources.push({ id:'r'+(idCounter++), subject, title, path, tags, createdAt });
-  closeModal('resourceModalOverlay');
-  render();
-}
-
-/* ---- Exercise Modal ---- */
-function openExerciseModal(subject){
-  document.getElementById('exSubject').value = subject && subjectMeta[subject] ? subject : 'english';
-  document.getElementById('exTitle').value = '';
-  document.getElementById('exPriority').value = 'medium';
-  document.getElementById('exChapter').value = '';
-  document.getElementById('exDue').value = '';
-  openModal('exerciseModalOverlay');
-}
-function submitExercise(){
-  const title = document.getElementById('exTitle').value.trim();
-  if(!title){ alert('Please enter a title.'); return; }
-  const subject = document.getElementById('exSubject').value;
-  const priority = document.getElementById('exPriority').value;
-  const chapter = document.getElementById('exChapter').value.trim();
-  const dueDate = document.getElementById('exDue').value;
-  exercises.push({ id:'e'+(idCounter++), subject, title, priority, chapter, dueDate, status:'pending', subtasks:[] });
-  closeModal('exerciseModalOverlay');
   render();
 }
 

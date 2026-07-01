@@ -91,7 +91,7 @@
 
   .search-wrap{
     flex:1;
-    max-width:440px;
+    max-width:480px;
   }
   .search-box{
     position:relative;
@@ -123,12 +123,6 @@
     background:#fff;
   }
   .search-box input::placeholder{ color:var(--ink-faint); }
-
-  .top-actions{
-    display:flex;
-    align-items:center;
-    gap:10px;
-  }
 
   /* ---------- STATS ROW + COUNTDOWN ---------- */
   .stats-row{
@@ -405,6 +399,31 @@
     margin-left:8px;
   }
 
+  /* Resource Tab Buttons */
+  .res-tab-bar{
+    display:flex;
+    gap:6px;
+    background:#EFF1F6;
+    padding:4px;
+    border-radius:10px;
+  }
+  .res-tab-btn{
+    border:none;
+    background:transparent;
+    font-size:12px;
+    font-weight:700;
+    color:var(--ink-soft);
+    padding:5px 12px;
+    border-radius:7px;
+    cursor:pointer;
+    transition:background .15s ease, color .15s ease;
+  }
+  .res-tab-btn.active{
+    background:#fff;
+    color:var(--ink);
+    box-shadow:0 1px 3px rgba(0,0,0,.08);
+  }
+
   .btn{
     display:inline-flex;
     align-items:center;
@@ -583,8 +602,20 @@
   .res-card.chinese::before{ background:var(--chinese-deep); }
   .res-card.politic::before{ background:var(--politic-deep); }
 
+  .res-card.completed{ background:#F9FAFC; opacity:0.85; }
+  .res-card.completed .res-title{ text-decoration:line-through; color:var(--ink-soft); }
+
   .res-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-top:4px;}
-  .res-title{ font-size:14.5px; font-weight:700; line-height:1.35; }
+  .res-title-wrap{ display:flex; align-items:flex-start; gap:10px; flex:1; }
+  .res-check{
+    width:19px; height:19px; border-radius:5px; border:2px solid #D3D6DE; flex-shrink:0; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; background:#fff; margin-top:1px;
+  }
+  .res-check.checked{ background:var(--chinese-deep); border-color:var(--chinese-deep); }
+  .res-check svg{ width:12px; height:12px; color:#fff; opacity:0; }
+  .res-check.checked svg{ opacity:1; }
+
+  .res-title{ font-size:14.5px; font-weight:700; line-height:1.35; flex:1; }
   
   .res-tool-btn{
     flex-shrink:0;
@@ -1025,16 +1056,13 @@
     <div class="top-row">
       <div class="brand">
         <h1>📚 Study Resource Dashboard</h1>
-        <p>Full Editable Resources, Prioritized Exercise Bank & Quantitative Trackers</p>
+        <p>Quantitative Trackers, Editable Tasks & Resources at Bottom</p>
       </div>
       <div class="search-wrap">
         <div class="search-box">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
           <input id="globalSearch" type="text" placeholder="Search resources, exercises, trackers or sub-tasks..." />
         </div>
-      </div>
-      <div class="top-actions">
-        <button class="btn btn-ghost btn-small" onclick="resetToSampleData()" title="Reload rich sample data">✨ Load Sample Data</button>
       </div>
     </div>
     
@@ -1045,7 +1073,7 @@
           <span class="label-left"><span class="dot"></span>Total Resources</span>
         </div>
         <div class="value" id="statTotal">0</div>
-        <div class="sub">fully editable knowledge base</div>
+        <div class="sub">editable & trackable base</div>
       </div>
       
       <!-- Pending Exercises -->
@@ -1236,6 +1264,13 @@
       <input id="resPath" type="text" placeholder="D:/Study/English/Grammar.pdf" />
     </div>
     <div class="field">
+      <label>Status</label>
+      <select id="resStatus">
+        <option value="pending">📖 Pending / In Progress</option>
+        <option value="completed">✅ Completed / Learned</option>
+      </select>
+    </div>
+    <div class="field">
       <label>Tags (comma separated)</label>
       <input id="resTags" type="text" placeholder="Grammar, Reading" />
     </div>
@@ -1322,7 +1357,7 @@
 </div>
 
 <script>
-/* ============ RICH SAMPLE DATA ============ */
+/* ============ INITIAL DATA ============ */
 const sampleTrackers = [
   { id:'tr1', subject:'english', title:'📖 《核心考研/雅思核心词汇书5000》阅读与打卡', unit:'Pages (页)', current:65, total:240 },
   { id:'tr2', subject:'chinese', title:'🎥 历年高考语文高分名师精讲专题课', unit:'Lessons (课时)', current:14, total:32 },
@@ -1331,20 +1366,20 @@ const sampleTrackers = [
 ];
 
 const sampleResources = [
-  {id:'r1', subject:'english', title:'IELTS & TOEFL Core Academic Vocabulary 5000', path:'D:/Study/English/IELTS_Academic_Vocab_5000.pdf', tags:['Vocabulary','High-Frequency'], createdAt:'2026-06-25'},
-  {id:'r2', subject:'english', title:'Advanced English Grammar Rules & Passive Voice Mastery', path:'D:/Study/English/Advanced_Grammar_Rules.docx', tags:['Grammar','Writing'], createdAt:'2026-06-28'},
-  {id:'r3', subject:'english', title:'Standard Essay Structure & Argumentative Templates', path:'D:/Study/English/Essay_Templates_2026.pdf', tags:['Writing','Templates'], createdAt:'2026-06-30'},
-  {id:'r4', subject:'english', title:'Reading Comprehension Speed & Skimming Techniques', path:'D:/Study/English/Reading_Skimming_Guide.pdf', tags:['Reading','Methodology'], createdAt:'2026-06-19'},
+  {id:'r1', subject:'english', title:'IELTS & TOEFL Core Academic Vocabulary 5000', path:'D:/Study/English/IELTS_Academic_Vocab_5000.pdf', status:'pending', tags:['Vocabulary','High-Frequency'], createdAt:'2026-06-25'},
+  {id:'r2', subject:'english', title:'Advanced English Grammar Rules & Passive Voice Mastery', path:'D:/Study/English/Advanced_Grammar_Rules.docx', status:'completed', tags:['Grammar','Writing'], createdAt:'2026-06-28'},
+  {id:'r3', subject:'english', title:'Standard Essay Structure & Argumentative Templates', path:'D:/Study/English/Essay_Templates_2026.pdf', status:'pending', tags:['Writing','Templates'], createdAt:'2026-06-30'},
+  {id:'r4', subject:'english', title:'Reading Comprehension Speed & Skimming Techniques', path:'D:/Study/English/Reading_Skimming_Guide.pdf', status:'completed', tags:['Reading','Methodology'], createdAt:'2026-06-19'},
   
-  {id:'r5', subject:'chinese', title:'历年高考文言文120个实词虚词全解汇总', path:'D:/Study/Chinese/高考文言文实词120解.pdf', tags:['文言文','高频考点'], createdAt:'2026-06-20'},
-  {id:'r6', subject:'chinese', title:'满分议论文8大核心架构与经典论据素材库', path:'D:/Study/Chinese/议论文论据素材库2026.docx', tags:['作文','素材'], createdAt:'2026-06-26'},
-  {id:'r7', subject:'chinese', title:'唐宋古诗词鉴赏术语总结与意象分析公式', path:'D:/Study/Chinese/古诗词鉴赏高分秘籍.pdf', tags:['古诗词','意象'], createdAt:'2026-06-29'},
-  {id:'r8', subject:'chinese', title:'现代文散文/小说答题逻辑与踩点给分原则', path:'D:/Study/Chinese/现代文阅读给分标准.pdf', tags:['阅读','现代文'], createdAt:'2026-06-22'},
+  {id:'r5', subject:'chinese', title:'历年高考文言文120个实词虚词全解汇总', path:'D:/Study/Chinese/高考文言文实词120解.pdf', status:'pending', tags:['文言文','高频考点'], createdAt:'2026-06-20'},
+  {id:'r6', subject:'chinese', title:'满分议论文8大核心架构与经典论据素材库', path:'D:/Study/Chinese/议论文论据素材库2026.docx', status:'pending', tags:['作文','素材'], createdAt:'2026-06-26'},
+  {id:'r7', subject:'chinese', title:'唐宋古诗词鉴赏术语总结与意象分析公式', path:'D:/Study/Chinese/古诗词鉴赏高分秘籍.pdf', status:'completed', tags:['古诗词','意象'], createdAt:'2026-06-29'},
+  {id:'r8', subject:'chinese', title:'现代文散文/小说答题逻辑与踩点给分原则', path:'D:/Study/Chinese/现代文阅读给分标准.pdf', status:'pending', tags:['阅读','现代文'], createdAt:'2026-06-22'},
 
-  {id:'r9', subject:'politic', title:'2026上半年国内外核心时政要闻精编提纲', path:'D:/Study/Politic/2026时政要闻精编.pdf', tags:['时政','热点'], createdAt:'2026-06-30'},
-  {id:'r10', subject:'politic', title:'马克思主义哲学唯物论与辩证法思维框架导图', path:'D:/Study/Politic/马哲核心逻辑导图.pdf', tags:['哲学','原理'], createdAt:'2026-06-18'},
-  {id:'r11', subject:'politic', title:'政治经济学价值规律与资本剩余价值公式解密', path:'D:/Study/Politic/政经公式考点全解.docx', tags:['政经','重难点'], createdAt:'2026-06-24'},
-  {id:'r12', subject:'politic', title:'大题论述万能衔接词与官方标准化表述模板', path:'D:/Study/Politic/大题标准表述模板.pdf', tags:['大题','答题规范'], createdAt:'2026-06-27'}
+  {id:'r9', subject:'politic', title:'2026上半年国内外核心时政要闻精编提纲', path:'D:/Study/Politic/2026时政要闻精编.pdf', status:'pending', tags:['时政','热点'], createdAt:'2026-06-30'},
+  {id:'r10', subject:'politic', title:'马克思主义哲学唯物论与辩证法思维框架导图', path:'D:/Study/Politic/马哲核心逻辑导图.pdf', status:'completed', tags:['哲学','原理'], createdAt:'2026-06-18'},
+  {id:'r11', subject:'politic', title:'政治经济学价值规律与资本剩余价值公式解密', path:'D:/Study/Politic/政经公式考点全解.docx', status:'pending', tags:['政经','重难点'], createdAt:'2026-06-24'},
+  {id:'r12', subject:'politic', title:'大题论述万能衔接词与官方标准化表述模板', path:'D:/Study/Politic/大题标准表述模板.pdf', status:'completed', tags:['大题','答题规范'], createdAt:'2026-06-27'}
 ];
 
 const sampleExercises = [
@@ -1477,6 +1512,9 @@ let quantitativeTrackers = JSON.parse(localStorage.getItem('study_trackers_pro')
 exercises.forEach(ex => {
   if(!ex.priority) ex.priority = 'medium';
 });
+resources.forEach(r => {
+  if(!r.status) r.status = 'pending';
+});
 
 function saveStateToStorage(){
   localStorage.setItem('study_resources_pro', JSON.stringify(resources));
@@ -1484,18 +1522,6 @@ function saveStateToStorage(){
   localStorage.setItem('study_scores_pro', JSON.stringify(subjectScores));
   localStorage.setItem('study_countdown_pro', JSON.stringify(countdownConfig));
   localStorage.setItem('study_trackers_pro', JSON.stringify(quantitativeTrackers));
-}
-
-function resetToSampleData(){
-  if(confirm("✨ Reset and load rich sample data?")){
-    resources = JSON.parse(JSON.stringify(sampleResources));
-    exercises = JSON.parse(JSON.stringify(sampleExercises));
-    subjectScores = JSON.parse(JSON.stringify(sampleSubjectScores));
-    countdownConfig = JSON.parse(JSON.stringify(sampleCountdown));
-    quantitativeTrackers = JSON.parse(JSON.stringify(sampleTrackers));
-    saveStateToStorage();
-    render();
-  }
 }
 
 const subjectMeta = {
@@ -1510,10 +1536,11 @@ let state = {
   filterSubject:'all',
   filterType:'all',
   filterStatus:'all',
-  filterPriority:'all'
+  filterPriority:'all',
+  resTab:'all' // 'all', 'pending', 'completed'
 };
 
-let idCounter = 500;
+let idCounter = 600;
 
 /* ============ HELPERS ============ */
 function escapeHtml(str){
@@ -1641,6 +1668,7 @@ document.querySelectorAll('.nav-item').forEach(item=>{
     state.view = item.dataset.subject;
     state.filterSubject = 'all';
     state.filterPriority = 'all';
+    state.resTab = 'all';
     render();
   });
 });
@@ -1715,6 +1743,11 @@ function onFilterChange(){
   render();
 }
 
+function setResTab(tab){
+  state.resTab = tab;
+  render();
+}
+
 /* ---- Quantitative Tracker Card Render ---- */
 function trackerCard(t){
   const cur = Number(t.current) || 0;
@@ -1766,11 +1799,18 @@ function renderDashboardHome(){
   const recentCompleted = exercises.filter(e=>e.status==='completed').slice(-5).reverse();
   const dotColor = s => s==='english' ? 'var(--english-deep)' : s==='chinese' ? 'var(--chinese-deep)' : 'var(--politic-deep)';
 
+  // Resources section tabs calculation
+  const pendingRes = resources.filter(r => r.status !== 'completed');
+  const completedRes = resources.filter(r => r.status === 'completed');
+  let displayedRes = resources;
+  if(state.resTab === 'pending') displayedRes = pendingRes;
+  if(state.resTab === 'completed') displayedRes = completedRes;
+
   return `
     <div class="page-head">
       <div>
         <h2>🚀 Dashboard Overview</h2>
-        <p>Fully editable resources & tasks, combined quantitative progress bars & score breakdown</p>
+        <p>Combined quantitative progress bars, emergency tasks & editable knowledge base at bottom</p>
       </div>
     </div>
 
@@ -1887,6 +1927,22 @@ function renderDashboardHome(){
         </div>
       </div>
     </div>
+
+    <!-- Section 5 (MOVED TO BOTTOM): Knowledge Resources with Checkbox & Tabs -->
+    <div class="section" style="margin-top:40px; padding-top:20px; border-top:2px dashed var(--line);">
+      <div class="section-head">
+        <div style="display:flex; align-items:center; gap:14px;">
+          <h3>📚 Knowledge Resources (Moved to Bottom) <span class="count-pill">${displayedRes.length}</span></h3>
+          <div class="res-tab-bar">
+            <button class="res-tab-btn ${state.resTab==='all'?'active':''}" onclick="setResTab('all')">All (${resources.length})</button>
+            <button class="res-tab-btn ${state.resTab==='pending'?'active':''}" onclick="setResTab('pending')">📖 Pending (${pendingRes.length})</button>
+            <button class="res-tab-btn ${state.resTab==='completed'?'active':''}" onclick="setResTab('completed')">✅ Completed (${completedRes.length})</button>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="openResourceModal('english')">+ Add Resource</button>
+      </div>
+      ${displayedRes.length ? `<div class="resource-grid">${displayedRes.map(r=>resourceCard(r)).join('')}</div>` : `<div class="empty-state">No resources matching tab selection.</div>`}
+    </div>
   `;
 }
 function switchToSubject(subj){
@@ -1923,6 +1979,13 @@ function renderSubjectPage(subject){
 
   const showResources = state.filterType === 'all' || state.filterType === 'resources';
   const showExercises = state.filterType === 'all' || state.filterType === 'exercises';
+
+  // Resource Tabs filtering for subject page
+  const pendingRes = res.filter(r => r.status !== 'completed');
+  const completedRes = res.filter(r => r.status === 'completed');
+  let displayedRes = res;
+  if(state.resTab === 'pending') displayedRes = pendingRes;
+  if(state.resTab === 'completed') displayedRes = completedRes;
 
   return `
     <div class="page-head">
@@ -1963,6 +2026,8 @@ function renderSubjectPage(subject){
       </div>
     </div>
 
+    ${renderFilterBar()}
+
     <!-- Quantitative Trackers for this subject -->
     <div class="section">
       <div class="section-head">
@@ -1972,17 +2037,6 @@ function renderSubjectPage(subject){
       ${tr.length ? `<div class="tracker-grid">${tr.map(t=>trackerCard(t)).join('')}</div>` : `<div class="empty-state">No quantitative trackers for ${meta.label} yet.</div>`}
     </div>
 
-    ${renderFilterBar()}
-
-    ${showResources ? `
-    <div class="section">
-      <div class="section-head">
-        <h3>Knowledge Resources <span class="count-pill">${res.length}</span></h3>
-        <button class="btn btn-primary" onclick="openResourceModal('${subject}')">+ Add Resource</button>
-      </div>
-      ${res.length ? `<div class="resource-grid">${res.map(r=>resourceCard(r)).join('')}</div>` : `<div class="empty-state">No resources matching filter.</div>`}
-    </div>` : ''}
-
     ${showExercises ? `
     <div class="section">
       <div class="section-head">
@@ -1991,15 +2045,37 @@ function renderSubjectPage(subject){
       </div>
       ${ex.length ? `<div class="exercise-list">${ex.map(e=>exerciseCard(e)).join('')}</div>` : `<div class="empty-state">No exercises matching filter.</div>`}
     </div>` : ''}
+
+    ${showResources ? `
+    <div class="section" style="margin-top:40px; padding-top:20px; border-top:2px dashed var(--line);">
+      <div class="section-head">
+        <div style="display:flex; align-items:center; gap:14px;">
+          <h3>📚 ${meta.label} Knowledge Resources (At Bottom) <span class="count-pill">${displayedRes.length}</span></h3>
+          <div class="res-tab-bar">
+            <button class="res-tab-btn ${state.resTab==='all'?'active':''}" onclick="setResTab('all')">All (${res.length})</button>
+            <button class="res-tab-btn ${state.resTab==='pending'?'active':''}" onclick="setResTab('pending')">📖 Pending (${pendingRes.length})</button>
+            <button class="res-tab-btn ${state.resTab==='completed'?'active':''}" onclick="setResTab('completed')">✅ Completed (${completedRes.length})</button>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="openResourceModal('${subject}')">+ Add Resource</button>
+      </div>
+      ${displayedRes.length ? `<div class="resource-grid">${displayedRes.map(r=>resourceCard(r)).join('')}</div>` : `<div class="empty-state">No resources matching filter.</div>`}
+    </div>` : ''}
   `;
 }
 
-/* ---- Editable Resource Card ---- */
+/* ---- Editable Resource Card with Checkbox Status ---- */
 function resourceCard(r){
+  const isDone = r.status === 'completed';
   return `
-    <div class="res-card ${r.subject}">
+    <div class="res-card ${r.subject} ${isDone ? 'completed' : ''}">
       <div class="res-top">
-        <div class="res-title">${escapeHtml(r.title)}</div>
+        <div class="res-title-wrap">
+          <div class="res-check ${isDone ? 'checked' : ''}" onclick="toggleResourceStatus('${r.id}')" title="Click to toggle completed status">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L19 7"/></svg>
+          </div>
+          <div class="res-title">${escapeHtml(r.title)}</div>
+        </div>
         <div style="display:flex; gap:2px;">
           <button class="res-tool-btn" onclick="openEditResourceModal('${r.id}')" title="Edit Resource Details">✏️</button>
           <button class="res-tool-btn delete" onclick="deleteResource('${r.id}')" title="Delete Resource">✕</button>
@@ -2110,14 +2186,23 @@ function renderSearchResults(){
       ${tr.length ? `<div class="tracker-grid">${tr.map(t=>trackerCard(t)).join('')}</div>` : `<div class="empty-state">No matching trackers.</div>`}
     </div>
     <div class="section">
-      <div class="section-head"><h3>Resources <span class="count-pill">${res.length}</span></h3></div>
-      ${res.length ? `<div class="resource-grid">${res.map(r=>resourceCard(r)).join('')}</div>` : `<div class="empty-state">No matching resources.</div>`}
-    </div>
-    <div class="section">
       <div class="section-head"><h3>Exercises & Sub-tasks <span class="count-pill">${ex.length}</span></h3></div>
       ${ex.length ? `<div class="exercise-list">${ex.map(e=>exerciseCard(e)).join('')}</div>` : `<div class="empty-state">No matching exercises.</div>`}
     </div>
+    <div class="section">
+      <div class="section-head"><h3>Resources <span class="count-pill">${res.length}</span></h3></div>
+      ${res.length ? `<div class="resource-grid">${res.map(r=>resourceCard(r)).join('')}</div>` : `<div class="empty-state">No matching resources.</div>`}
+    </div>
   `;
+}
+
+/* ============ RESOURCE STATUS TOGGLE ============ */
+function toggleResourceStatus(id){
+  const r = resources.find(x => x.id === id);
+  if(r){
+    r.status = r.status === 'completed' ? 'pending' : 'completed';
+  }
+  render();
 }
 
 /* ============ QUANTITATIVE TRACKER ACTIONS ============ */
@@ -2264,6 +2349,7 @@ function openResourceModal(subject){
   document.getElementById('resSubject').value = subject && subjectMeta[subject] ? subject : 'english';
   document.getElementById('resTitle').value = '';
   document.getElementById('resPath').value = '';
+  document.getElementById('resStatus').value = 'pending';
   document.getElementById('resTags').value = '';
   document.getElementById('resDate').value = todayISO();
   openModal('resourceModalOverlay');
@@ -2278,6 +2364,7 @@ function openEditResourceModal(id){
   document.getElementById('resSubject').value = r.subject;
   document.getElementById('resTitle').value = r.title;
   document.getElementById('resPath').value = r.path || '';
+  document.getElementById('resStatus').value = r.status || 'pending';
   document.getElementById('resTags').value = (r.tags || []).join(', ');
   document.getElementById('resDate').value = r.createdAt || todayISO();
   openModal('resourceModalOverlay');
@@ -2289,6 +2376,7 @@ function submitResource(){
   if(!title){ alert('Please enter a title.'); return; }
   const subject = document.getElementById('resSubject').value;
   const path = document.getElementById('resPath').value.trim();
+  const status = document.getElementById('resStatus').value || 'pending';
   const tags = document.getElementById('resTags').value.split(',').map(t=>t.trim()).filter(Boolean);
   const createdAt = document.getElementById('resDate').value || todayISO();
 
@@ -2298,11 +2386,12 @@ function submitResource(){
       r.subject = subject;
       r.title = title;
       r.path = path;
+      r.status = status;
       r.tags = tags;
       r.createdAt = createdAt;
     }
   } else {
-    resources.push({ id:'r'+(idCounter++), subject, title, path, tags, createdAt });
+    resources.push({ id:'r'+(idCounter++), subject, title, path, status, tags, createdAt });
   }
   closeModal('resourceModalOverlay');
   render();

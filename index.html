@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Study Resource Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F8F9FB;
+    --card:#FFFFFF;
+    --ink:#23262B;
+    --ink-soft:#6B7078;
+    --ink-faint:#A2A7B0;
+    --line:#ECEDF1;
+
+    --english:#F7C8D8;
+    --english-deep:#E88CAA;
+    --english-text:#B04D6E;
+    --english-tint:#FDF1F5;
+
+    --chinese:#CFE8FF;
+    --chinese-deep:#7CB4E8;
+    --chinese-text:#3F76AD;
+    --chinese-tint:#F0F8FF;
+
+    --politic:#D8C3A5;
+    --politic-deep:#B79C74;
+    --politic-text:#8A6F45;
+    --politic-tint:#FAF6EF;
+
+    --radius:14px;
+    --shadow:0 1px 2px rgba(30,32,40,.04), 0 4px 14px rgba(30,32,40,.05);
+    --shadow-hover:0 2px 4px rgba(30,32,40,.06), 0 10px 24px rgba(30,32,40,.08);
+  }
+
+  *{box-sizing:border-box;}
+  body{margin:0;}
+  html,body{height:100%;}
+
+  body{
+    font-family:'Inter',-apple-system,'Segoe UI',Arial,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+
+  ::selection{ background: var(--chinese); }
+
+  .app{
+    display:grid;
+    grid-template-columns:236px 1fr;
+    grid-template-rows:auto 1fr;
+    grid-template-areas:
+      "header header"
+      "sidebar main";
+    min-height:100vh;
+    min-width:1200px;
+  }
+
+  /* ---------- HEADER ---------- */
+  header.top{
+    grid-area:header;
+    background:var(--card);
+    border-bottom:1px solid var(--line);
+    padding:22px 32px 0 32px;
+  }
+  .top-row{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:24px;
+    padding-bottom:20px;
+  }
+  .brand h1{
+    margin:0;
+    font-size:22px;
+    font-weight:800;
+    letter-spacing:-0.02em;
+  }
+  .brand p{
+    margin:3px 0 0 0;
+    font-size:13px;
+    color:var(--ink-soft);
+    font-weight:500;
+  }
+
+  .search-wrap{
+    flex:1;
+    max-width:420px;
+    margin-top:2px;
+  }
+  .search-box{
+    position:relative;
+    display:flex;
+    align-items:center;
+  }
+  .search-box svg{
+    position:absolute;
+    left:14px;
+    width:16px;
+    height:16px;
+    color:var(--ink-faint);
+    pointer-events:none;
+  }
+  .search-box input{
+    width:100%;
+    padding:11px 14px 11px 38px;
+    border-radius:10px;
+    border:1.5px solid var(--line);
+    background:#FBFBFD;
+    font-family:inherit;
+    font-size:14px;
+    color:var(--ink);
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .search-box input:focus{
+    outline:none;
+    border-color:var(--chinese-deep);
+    background:#fff;
+  }
+  .search-box input::placeholder{ color:var(--ink-faint); }
+
+  .stats-row{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:14px;
+    padding-bottom:22px;
+  }
+  .stat-card{
+    border-radius:var(--radius);
+    padding:16px 18px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    border:1px solid var(--line);
+  }
+  .stat-card .label{
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink-soft);
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .stat-card .dot{ width:7px; height:7px; border-radius:50%; }
+  .stat-card .value{
+    font-size:28px;
+    font-weight:700;
+    letter-spacing:-0.02em;
+  }
+  .stat-card .sub{ font-size:11.5px; color:var(--ink-faint); font-weight:500; }
+  .stat-total{ background:linear-gradient(180deg,#F4F6FA,#EFF1F6); }
+  .stat-pending{ background:var(--english-tint); }
+  .stat-done{ background:var(--chinese-tint); }
+  .stat-total .dot{ background:#9AA1AE; }
+  .stat-pending .dot{ background:var(--english-deep); }
+  .stat-done .dot{ background:var(--chinese-deep); }
+
+  /* ---------- SIDEBAR ---------- */
+  aside.side{
+    grid-area:sidebar;
+    background:var(--card);
+    border-right:1px solid var(--line);
+    padding:20px 14px;
+    display:flex;
+    flex-direction:column;
+  }
+  .nav-group{ display:flex; flex-direction:column; gap:4px; }
+  .nav-eyebrow{
+    font-size:11px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--ink-faint);
+    padding:8px 12px 6px 12px;
+  }
+  .nav-item{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 12px;
+    border-radius:10px;
+    font-size:14px;
+    font-weight:600;
+    color:var(--ink-soft);
+    cursor:pointer;
+    border:1px solid transparent;
+    transition:background .12s ease, color .12s ease;
+    user-select:none;
+  }
+  .nav-item:hover{ background:#F5F6F9; color:var(--ink); }
+  .nav-item .swatch{
+    width:9px; height:9px; border-radius:3px; flex-shrink:0;
+    background:#D7DAE1;
+  }
+  .nav-item.active{
+    background:#F5F6F9;
+    color:var(--ink);
+    border-color:var(--line);
+  }
+  .nav-item[data-subject="dashboard"].active{ background:#EEF0F4; }
+  .nav-item[data-subject="english"].active{ background:var(--english-tint); color:var(--english-text); }
+  .nav-item[data-subject="english"].active .swatch{ background:var(--english-deep); }
+  .nav-item[data-subject="chinese"].active{ background:var(--chinese-tint); color:var(--chinese-text); }
+  .nav-item[data-subject="chinese"].active .swatch{ background:var(--chinese-deep); }
+  .nav-item[data-subject="politic"].active{ background:var(--politic-tint); color:var(--politic-text); }
+  .nav-item[data-subject="politic"].active .swatch{ background:var(--politic-deep); }
+
+  .side-progress{
+    margin-top:auto;
+    background:linear-gradient(155deg,#F6F4FF 0%,#F2F7FF 100%);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:16px;
+  }
+  .side-progress .sp-title{ font-size:12px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.05em;}
+  .side-progress .sp-goal{ font-size:14.5px; font-weight:700; margin-top:6px; }
+  .side-progress .sp-bar{
+    margin-top:12px; height:6px; border-radius:4px; background:#E4E7EE; overflow:hidden;
+  }
+  .side-progress .sp-fill{
+    height:100%; border-radius:4px;
+    background:linear-gradient(90deg,var(--chinese-deep),var(--english-deep));
+    width:64%;
+  }
+  .side-progress .sp-note{ margin-top:8px; font-size:11.5px; color:var(--ink-faint); }
+
+  /* ---------- MAIN ---------- */
+  main.content{
+    grid-area:main;
+    padding:26px 32px 60px 32px;
+    overflow-y:auto;
+  }
+
+  .page-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:18px;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .page-head h2{
+    margin:0;
+    font-size:19px;
+    font-weight:800;
+    letter-spacing:-0.01em;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .page-head h2 .tag-dot{ width:11px; height:11px; border-radius:4px; }
+  .page-head p{ margin:2px 0 0 0; font-size:13px; color:var(--ink-soft); }
+
+  .filter-bar{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:22px;
+    padding:12px 14px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:12px;
+  }
+  .filter-group{ display:flex; align-items:center; gap:8px; }
+  .filter-group label{ font-size:12px; font-weight:600; color:var(--ink-faint); }
+  select.filter-select{
+    font-family:inherit;
+    font-size:13px;
+    font-weight:600;
+    padding:7px 10px;
+    border-radius:8px;
+    border:1.5px solid var(--line);
+    background:#FBFBFD;
+    color:var(--ink);
+    cursor:pointer;
+  }
+  select.filter-select:focus{ outline:none; border-color:var(--chinese-deep); }
+
+  .section{ margin-bottom:34px; }
+  .section-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:14px;
+  }
+  .section-head h3{
+    margin:0;
+    font-size:15px;
+    font-weight:700;
+  }
+  .section-head .count-pill{
+    font-size:11.5px;
+    font-weight:700;
+    color:var(--ink-soft);
+    background:#F0F1F5;
+    padding:2px 9px;
+    border-radius:20px;
+    margin-left:8px;
+  }
+
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-family:inherit;
+    font-size:13px;
+    font-weight:700;
+    border-radius:9px;
+    padding:8px 14px;
+    border:1.5px solid transparent;
+    cursor:pointer;
+    transition:transform .08s ease, box-shadow .12s ease, filter .12s ease;
+  }
+  .btn:active{ transform:scale(.97); }
+  .btn-primary{
+    background:var(--ink);
+    color:#fff;
+  }
+  .btn-primary:hover{ filter:brightness(1.15); }
+  .btn-ghost{
+    background:#fff;
+    color:var(--ink-soft);
+    border-color:var(--line);
+  }
+  .btn-ghost:hover{ background:#F5F6F9; color:var(--ink); }
+  .btn-small{ padding:5px 10px; font-size:12px; }
+
+  /* ---- resource cards ---- */
+  .resource-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:16px;
+  }
+  .res-card{
+    position:relative;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:16px 16px 14px 16px;
+    box-shadow:var(--shadow);
+    transition:box-shadow .15s ease, transform .15s ease;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .res-card:hover{ box-shadow:var(--shadow-hover); transform:translateY(-2px); }
+  .res-card::before{
+    content:"";
+    position:absolute;
+    left:16px; top:0;
+    width:34px; height:6px;
+    border-radius:0 0 4px 4px;
+  }
+  .res-card.english::before{ background:var(--english-deep); }
+  .res-card.chinese::before{ background:var(--chinese-deep); }
+  .res-card.politic::before{ background:var(--politic-deep); }
+
+  .res-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-top:4px;}
+  .res-title{ font-size:14.5px; font-weight:700; line-height:1.35; }
+  .res-del{
+    flex-shrink:0;
+    background:none; border:none; cursor:pointer;
+    color:var(--ink-faint);
+    font-size:12px;
+    font-weight:600;
+    padding:2px 4px;
+    border-radius:6px;
+  }
+  .res-del:hover{ color:#C24545; background:#FDF0F0; }
+
+  .res-path{
+    font-size:11.5px;
+    color:var(--ink-faint);
+    background:#F7F8FA;
+    padding:6px 8px;
+    border-radius:7px;
+    font-family:'SFMono-Regular',Consolas,monospace;
+    word-break:break-all;
+    line-height:1.4;
+  }
+
+  .res-tags{ display:flex; flex-wrap:wrap; gap:6px; }
+  .pill{
+    font-size:11px;
+    font-weight:700;
+    padding:3px 10px;
+    border-radius:20px;
+  }
+  .pill.english{ background:var(--english-tint); color:var(--english-text); }
+  .pill.chinese{ background:var(--chinese-tint); color:var(--chinese-text); }
+  .pill.politic{ background:var(--politic-tint); color:var(--politic-text); }
+
+  .res-bottom{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-top:4px;
+    padding-top:10px;
+    border-top:1px solid var(--line);
+  }
+  .res-date{ font-size:11px; color:var(--ink-faint); font-weight:500; }
+  .open-btn{
+    font-size:12px;
+    font-weight:700;
+    color:var(--ink);
+    background:#F2F3F6;
+    border:none;
+    padding:6px 12px;
+    border-radius:7px;
+    cursor:pointer;
+  }
+  .open-btn:hover{ background:#E7E9EE; }
+
+  /* ---- exercise list ---- */
+  .exercise-list{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .ex-row{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:12px 14px;
+    transition:box-shadow .15s ease;
+  }
+  .ex-row:hover{ box-shadow:var(--shadow); }
+  .ex-check{
+    width:19px; height:19px;
+    border-radius:6px;
+    border:2px solid #D3D6DE;
+    flex-shrink:0;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#fff;
+    transition:background .12s ease, border-color .12s ease;
+  }
+  .ex-check.checked{
+    background:var(--ink);
+    border-color:var(--ink);
+  }
+  .ex-check svg{ width:12px; height:12px; color:#fff; opacity:0; transition:opacity .1s ease;}
+  .ex-check.checked svg{ opacity:1; }
+
+  .ex-body{ flex:1; min-width:0; }
+  .ex-title{ font-size:14px; font-weight:600; }
+  .ex-row.completed .ex-title{ color:var(--ink-faint); text-decoration:line-through; }
+  .ex-meta{ font-size:11.5px; color:var(--ink-faint); margin-top:2px; display:flex; gap:10px; flex-wrap:wrap; }
+
+  .ex-subject-tag{
+    font-size:10.5px;
+    font-weight:700;
+    padding:3px 9px;
+    border-radius:20px;
+    flex-shrink:0;
+  }
+  .ex-subject-tag.english{ background:var(--english-tint); color:var(--english-text); }
+  .ex-subject-tag.chinese{ background:var(--chinese-tint); color:var(--chinese-text); }
+  .ex-subject-tag.politic{ background:var(--politic-tint); color:var(--politic-text); }
+
+  .ex-status{
+    font-size:11px;
+    font-weight:700;
+    padding:3px 10px;
+    border-radius:20px;
+    flex-shrink:0;
+  }
+  .ex-status.pending{ background:#FFF3E0; color:#B4700F; }
+  .ex-status.completed{ background:#EAF7EE; color:#2F9155; }
+
+  .ex-del{
+    background:none; border:none; cursor:pointer;
+    color:var(--ink-faint); font-size:16px; padding:4px 6px; border-radius:6px; flex-shrink:0;
+  }
+  .ex-del:hover{ color:#C24545; background:#FDF0F0; }
+
+  .empty-state{
+    text-align:center;
+    padding:40px 20px;
+    color:var(--ink-faint);
+    font-size:13.5px;
+    background:var(--card);
+    border:1px dashed var(--line);
+    border-radius:var(--radius);
+  }
+
+  /* ---- dashboard home ---- */
+  .home-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:18px;
+  }
+  .home-panel{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:16px;
+    box-shadow:var(--shadow);
+  }
+  .home-panel h4{
+    margin:0 0 12px 0;
+    font-size:13.5px;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .home-list{ display:flex; flex-direction:column; gap:10px; }
+  .home-list-item{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:13px;
+  }
+  .home-list-item .hli-dot{ width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+  .home-list-item .hli-text{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600; }
+  .home-list-item .hli-date{ font-size:11px; color:var(--ink-faint); flex-shrink:0; }
+
+  /* ---- modal ---- */
+  .modal-overlay{
+    position:fixed; inset:0;
+    background:rgba(30,32,38,.4);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:100;
+  }
+  .modal-overlay.open{ display:flex; }
+  .modal{
+    background:#fff;
+    border-radius:16px;
+    width:420px;
+    max-width:90vw;
+    padding:22px;
+    box-shadow:0 20px 60px rgba(0,0,0,.2);
+  }
+  .modal h3{ margin:0 0 16px 0; font-size:16px; font-weight:800; }
+  .field{ margin-bottom:13px; }
+  .field label{ display:block; font-size:12px; font-weight:700; color:var(--ink-soft); margin-bottom:5px; }
+  .field input, .field select{
+    width:100%;
+    font-family:inherit;
+    font-size:13.5px;
+    padding:9px 11px;
+    border-radius:9px;
+    border:1.5px solid var(--line);
+    background:#FBFBFD;
+    color:var(--ink);
+  }
+  .field input:focus, .field select:focus{ outline:none; border-color:var(--chinese-deep); background:#fff; }
+  .modal-actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:18px; }
+
+  ::-webkit-scrollbar{ width:10px; }
+  ::-webkit-scrollbar-thumb{ background:#DDE0E6; border-radius:10px; }
+  ::-webkit-scrollbar-track{ background:transparent; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="top">
+    <div class="top-row">
+      <div class="brand">
+        <h1>Study Resource Dashboard</h1>
+        <p>Learning Material Management</p>
+      </div>
+      <div class="search-wrap">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input id="globalSearch" type="text" placeholder="Search resources, notes or exercises..." />
+        </div>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card stat-total">
+        <div class="label"><span class="dot"></span>Total Resources</div>
+        <div class="value" id="statTotal">0</div>
+        <div class="sub">across English · Chinese · Politic</div>
+      </div>
+      <div class="stat-card stat-pending">
+        <div class="label"><span class="dot"></span>Pending Exercises</div>
+        <div class="value" id="statPending">0</div>
+        <div class="sub">still waiting on you</div>
+      </div>
+      <div class="stat-card stat-done">
+        <div class="label"><span class="dot"></span>Completed Exercises</div>
+        <div class="value" id="statDone">0</div>
+        <div class="sub">nice work so far</div>
+      </div>
+    </div>
+  </header>
+
+  <aside class="side">
+    <div class="nav-group">
+      <div class="nav-eyebrow">Overview</div>
+      <div class="nav-item active" data-subject="dashboard"><span class="swatch"></span>Dashboard</div>
+      <div class="nav-eyebrow">Subjects</div>
+      <div class="nav-item" data-subject="english"><span class="swatch"></span>English</div>
+      <div class="nav-item" data-subject="chinese"><span class="swatch"></span>Chinese</div>
+      <div class="nav-item" data-subject="politic"><span class="swatch"></span>Politic</div>
+    </div>
+
+    <div class="side-progress">
+      <div class="sp-title">Today's Goal</div>
+      <div class="sp-goal">Keep Learning 🌱</div>
+      <div class="sp-bar"><div class="sp-fill"></div></div>
+      <div class="sp-note">64% of this week's exercises done</div>
+    </div>
+  </aside>
+
+  <main class="content" id="mainContent"></main>
+</div>
+
+<div class="modal-overlay" id="resourceModalOverlay">
+  <div class="modal">
+    <h3>Add Resource</h3>
+    <div class="field">
+      <label>Subject</label>
+      <select id="resSubject">
+        <option value="english">English</option>
+        <option value="chinese">Chinese</option>
+        <option value="politic">Politic</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Title</label>
+      <input id="resTitle" type="text" placeholder="e.g. Grammar - Passive Voice" />
+    </div>
+    <div class="field">
+      <label>File Path / Link</label>
+      <input id="resPath" type="text" placeholder="D:/Study/English/Grammar.pdf" />
+    </div>
+    <div class="field">
+      <label>Tags (comma separated)</label>
+      <input id="resTags" type="text" placeholder="Grammar, Reading" />
+    </div>
+    <div class="field">
+      <label>Created Date</label>
+      <input id="resDate" type="date" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('resourceModalOverlay')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitResource()">Add Resource</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="exerciseModalOverlay">
+  <div class="modal">
+    <h3>Add Exercise</h3>
+    <div class="field">
+      <label>Subject</label>
+      <select id="exSubject">
+        <option value="english">English</option>
+        <option value="chinese">Chinese</option>
+        <option value="politic">Politic</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Title</label>
+      <input id="exTitle" type="text" placeholder="e.g. Unit 4 Vocabulary Quiz" />
+    </div>
+    <div class="field">
+      <label>Chapter (optional)</label>
+      <input id="exChapter" type="text" placeholder="e.g. Chapter 4" />
+    </div>
+    <div class="field">
+      <label>Due Date (optional)</label>
+      <input id="exDue" type="date" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('exerciseModalOverlay')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitExercise()">Add Exercise</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============ DATA ============ */
+let resources = [
+  {id:'r1', subject:'english', title:'Grammar - Passive Voice', path:'D:/Study/English/Grammar_PassiveVoice.pdf', tags:['Grammar','Writing'], createdAt:'2026-06-20'},
+  {id:'r2', subject:'english', title:'IELTS Vocabulary List', path:'D:/Study/English/IELTS_Vocab.docx', tags:['Vocabulary'], createdAt:'2026-06-24'},
+  {id:'r3', subject:'english', title:'Reading Comprehension Notes', path:'D:/Study/English/Reading_Notes.pdf', tags:['Reading'], createdAt:'2026-06-27'},
+  {id:'r4', subject:'chinese', title:'文言文实词整理', path:'D:/Study/Chinese/文言文实词.pdf', tags:['文言文','基础'], createdAt:'2026-06-18'},
+  {id:'r5', subject:'chinese', title:'议论文写作结构', path:'D:/Study/Chinese/议论文结构.docx', tags:['作文'], createdAt:'2026-06-22'},
+  {id:'r6', subject:'chinese', title:'古诗词鉴赏笔记', path:'D:/Study/Chinese/古诗词鉴赏.pdf', tags:['诗词','鉴赏'], createdAt:'2026-06-29'},
+  {id:'r7', subject:'politic', title:'时政热点整理 - 6月', path:'D:/Study/Politic/时政热点06.pdf', tags:['时政'], createdAt:'2026-06-25'},
+  {id:'r8', subject:'politic', title:'哲学原理框架图', path:'D:/Study/Politic/哲学框架.pdf', tags:['哲学','框架'], createdAt:'2026-06-15'},
+  {id:'r9', subject:'politic', title:'政治经济学核心概念', path:'D:/Study/Politic/政经概念.docx', tags:['经济学'], createdAt:'2026-06-30'}
+];
+
+let exercises = [
+  {id:'e1', subject:'english', title:'Unit 4 Grammar Quiz', chapter:'Unit 4', dueDate:'2026-07-03', status:'pending'},
+  {id:'e2', subject:'english', title:'Reading Practice Set 2', chapter:'', dueDate:'2026-07-05', status:'pending'},
+  {id:'e3', subject:'english', title:'Vocabulary Test - Week 3', chapter:'Week 3', dueDate:'2026-06-28', status:'completed'},
+  {id:'e4', subject:'chinese', title:'文言文翻译练习', chapter:'第三单元', dueDate:'2026-07-02', status:'pending'},
+  {id:'e5', subject:'chinese', title:'作文限时训练', chapter:'', dueDate:'2026-07-04', status:'pending'},
+  {id:'e6', subject:'chinese', title:'古诗词默写检测', chapter:'', dueDate:'2026-06-26', status:'completed'},
+  {id:'e7', subject:'politic', title:'时政选择题专项', chapter:'', dueDate:'2026-07-06', status:'pending'},
+  {id:'e8', subject:'politic', title:'哲学材料分析题', chapter:'第二章', dueDate:'2026-06-29', status:'completed'}
+];
+
+const subjectMeta = {
+  english:{ label:'English', tagline:'Grammar · Vocabulary · Reading & Writing' },
+  chinese:{ label:'Chinese', tagline:'文言文 · 作文 · 诗词鉴赏' },
+  politic:{ label:'Politic', tagline:'时政 · 哲学 · 政治经济学' }
+};
+
+let state = {
+  view:'dashboard',
+  search:'',
+  filterSubject:'all',
+  filterType:'all',
+  filterStatus:'all'
+};
+
+let idCounter = 100;
+
+/* ============ HELPERS ============ */
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function matchesSearch(text, q){
+  if(!q) return true;
+  return text.toLowerCase().includes(q.toLowerCase());
+}
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+
+/* ============ STATS ============ */
+function updateStats(){
+  document.getElementById('statTotal').textContent = resources.length;
+  document.getElementById('statPending').textContent = exercises.filter(e=>e.status==='pending').length;
+  document.getElementById('statDone').textContent = exercises.filter(e=>e.status==='completed').length;
+}
+
+/* ============ NAV ============ */
+document.querySelectorAll('.nav-item').forEach(item=>{
+  item.addEventListener('click', ()=>{
+    document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+    item.classList.add('active');
+    state.view = item.dataset.subject;
+    state.filterSubject = 'all';
+    render();
+  });
+});
+
+/* ============ SEARCH ============ */
+document.getElementById('globalSearch').addEventListener('input', (e)=>{
+  state.search = e.target.value.trim();
+  if(state.search && state.view === 'dashboard'){
+    // stay on dashboard but show search results across all subjects
+  }
+  render();
+});
+
+/* ============ RENDER ============ */
+function render(){
+  updateStats();
+  const main = document.getElementById('mainContent');
+  if(state.search){
+    main.innerHTML = renderSearchResults();
+    return;
+  }
+  if(state.view === 'dashboard'){
+    main.innerHTML = renderDashboardHome();
+  } else {
+    main.innerHTML = renderSubjectPage(state.view);
+  }
+}
+
+function renderFilterBar(){
+  return `
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label>Subject</label>
+        <select class="filter-select" id="fSubject" onchange="onFilterChange()">
+          <option value="all" ${state.filterSubject==='all'?'selected':''}>All</option>
+          <option value="english" ${state.filterSubject==='english'?'selected':''}>English</option>
+          <option value="chinese" ${state.filterSubject==='chinese'?'selected':''}>Chinese</option>
+          <option value="politic" ${state.filterSubject==='politic'?'selected':''}>Politic</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Type</label>
+        <select class="filter-select" id="fType" onchange="onFilterChange()">
+          <option value="all" ${state.filterType==='all'?'selected':''}>All</option>
+          <option value="resources" ${state.filterType==='resources'?'selected':''}>Resources</option>
+          <option value="exercises" ${state.filterType==='exercises'?'selected':''}>Exercises</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Status</label>
+        <select class="filter-select" id="fStatus" onchange="onFilterChange()">
+          <option value="all" ${state.filterStatus==='all'?'selected':''}>All</option>
+          <option value="pending" ${state.filterStatus==='pending'?'selected':''}>Pending</option>
+          <option value="completed" ${state.filterStatus==='completed'?'selected':''}>Completed</option>
+        </select>
+      </div>
+    </div>
+  `;
+}
+function onFilterChange(){
+  state.filterSubject = document.getElementById('fSubject').value;
+  state.filterType = document.getElementById('fType').value;
+  state.filterStatus = document.getElementById('fStatus').value;
+  render();
+}
+
+/* ---- Dashboard Home ---- */
+function renderDashboardHome(){
+  const latestResources = [...resources].sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).slice(0,5);
+  const latestExercises = [...exercises].sort((a,b)=>(b.dueDate||'').localeCompare(a.dueDate||'')).slice(0,5);
+  const recentCompleted = exercises.filter(e=>e.status==='completed').slice(-5).reverse();
+
+  const dotColor = s => s==='english' ? 'var(--english-deep)' : s==='chinese' ? 'var(--chinese-deep)' : 'var(--politic-deep)';
+
+  return `
+    <div class="page-head">
+      <div>
+        <h2>Dashboard</h2>
+        <p>Your full learning overview across all subjects</p>
+      </div>
+    </div>
+    <div class="home-grid">
+      <div class="home-panel">
+        <h4>📚 Latest Resources</h4>
+        <div class="home-list">
+          ${latestResources.map(r=>`
+            <div class="home-list-item">
+              <span class="hli-dot" style="background:${dotColor(r.subject)}"></span>
+              <span class="hli-text">${escapeHtml(r.title)}</span>
+              <span class="hli-date">${r.createdAt}</span>
+            </div>`).join('') || emptyRow()}
+        </div>
+      </div>
+      <div class="home-panel">
+        <h4>📝 Latest Exercises</h4>
+        <div class="home-list">
+          ${latestExercises.map(e=>`
+            <div class="home-list-item">
+              <span class="hli-dot" style="background:${dotColor(e.subject)}"></span>
+              <span class="hli-text">${escapeHtml(e.title)}</span>
+              <span class="hli-date">${e.dueDate || '—'}</span>
+            </div>`).join('') || emptyRow()}
+        </div>
+      </div>
+      <div class="home-panel">
+        <h4>✅ Recently Completed</h4>
+        <div class="home-list">
+          ${recentCompleted.map(e=>`
+            <div class="home-list-item">
+              <span class="hli-dot" style="background:${dotColor(e.subject)}"></span>
+              <span class="hli-text">${escapeHtml(e.title)}</span>
+              <span class="hli-date">${e.dueDate || '—'}</span>
+            </div>`).join('') || emptyRow()}
+        </div>
+      </div>
+    </div>
+  `;
+}
+function emptyRow(){ return `<div class="home-list-item"><span class="hli-text" style="color:var(--ink-faint); font-weight:500;">Nothing here yet</span></div>`; }
+
+/* ---- Subject Page ---- */
+function renderSubjectPage(subject){
+  const meta = subjectMeta[subject];
+  let res = resources.filter(r=>r.subject===subject);
+  let ex = exercises.filter(e=>e.subject===subject);
+
+  if(state.filterStatus !== 'all'){
+    ex = ex.filter(e=>e.status===state.filterStatus);
+  }
+
+  const showResources = state.filterType === 'all' || state.filterType === 'resources';
+  const showExercises = state.filterType === 'all' || state.filterType === 'exercises';
+
+  return `
+    <div class="page-head">
+      <h2><span class="tag-dot" style="background:var(--${subject}-deep)"></span>${meta.label}</h2>
+    </div>
+    <p style="margin:-12px 0 18px 0; font-size:13px; color:var(--ink-soft);">${meta.tagline}</p>
+    ${renderFilterBar()}
+
+    ${showResources ? `
+    <div class="section">
+      <div class="section-head">
+        <h3>Knowledge Resources <span class="count-pill">${res.length}</span></h3>
+        <button class="btn btn-primary" onclick="openResourceModal('${subject}')">+ Add Resource</button>
+      </div>
+      ${res.length ? `<div class="resource-grid">${res.map(r=>resourceCard(r)).join('')}</div>` : `<div class="empty-state">No resources yet. Add your first ${meta.label} resource.</div>`}
+    </div>` : ''}
+
+    ${showExercises ? `
+    <div class="section">
+      <div class="section-head">
+        <h3>Exercise Bank <span class="count-pill">${ex.length}</span></h3>
+        <button class="btn btn-primary" onclick="openExerciseModal('${subject}')">+ Add Exercise</button>
+      </div>
+      ${ex.length ? `<div class="exercise-list">${ex.map(e=>exerciseRow(e)).join('')}</div>` : `<div class="empty-state">No exercises yet. Add one to start tracking.</div>`}
+    </div>` : ''}
+  `;
+}
+
+function resourceCard(r){
+  return `
+    <div class="res-card ${r.subject}">
+      <div class="res-top">
+        <div class="res-title">${escapeHtml(r.title)}</div>
+        <button class="res-del" onclick="deleteResource('${r.id}')">Delete</button>
+      </div>
+      <div class="res-path">${escapeHtml(r.path || '—')}</div>
+      <div class="res-tags">${(r.tags||[]).map(t=>`<span class="pill ${r.subject}">${escapeHtml(t)}</span>`).join('')}</div>
+      <div class="res-bottom">
+        <span class="res-date">${r.createdAt}</span>
+        <button class="open-btn">Open</button>
+      </div>
+    </div>
+  `;
+}
+
+function exerciseRow(e){
+  const checked = e.status === 'completed';
+  return `
+    <div class="ex-row ${checked?'completed':''}">
+      <div class="ex-check ${checked?'checked':''}" onclick="toggleExercise('${e.id}')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L19 7"/></svg>
+      </div>
+      <span class="ex-subject-tag ${e.subject}">${subjectMeta[e.subject].label}</span>
+      <div class="ex-body">
+        <div class="ex-title">${escapeHtml(e.title)}</div>
+        <div class="ex-meta">
+          ${e.chapter ? `<span>${escapeHtml(e.chapter)}</span>` : ''}
+          ${e.dueDate ? `<span>Due ${e.dueDate}</span>` : ''}
+        </div>
+      </div>
+      <span class="ex-status ${e.status}">${e.status === 'pending' ? 'Pending' : 'Completed'}</span>
+      <button class="ex-del" onclick="deleteExercise('${e.id}')">✕</button>
+    </div>
+  `;
+}
+
+/* ---- Search results ---- */
+function renderSearchResults(){
+  const q = state.search;
+  const res = resources.filter(r =>
+    matchesSearch(r.title, q) ||
+    matchesSearch(r.path||'', q) ||
+    (r.tags||[]).some(t=>matchesSearch(t,q)) ||
+    matchesSearch(subjectMeta[r.subject].label, q)
+  );
+  const ex = exercises.filter(e =>
+    matchesSearch(e.title, q) ||
+    matchesSearch(e.chapter||'', q) ||
+    matchesSearch(subjectMeta[e.subject].label, q)
+  );
+
+  return `
+    <div class="page-head">
+      <div>
+        <h2>Search Results</h2>
+        <p>Showing matches for "${escapeHtml(q)}" across all subjects</p>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-head"><h3>Resources <span class="count-pill">${res.length}</span></h3></div>
+      ${res.length ? `<div class="resource-grid">${res.map(r=>resourceCard(r)).join('')}</div>` : `<div class="empty-state">No matching resources.</div>`}
+    </div>
+    <div class="section">
+      <div class="section-head"><h3>Exercises <span class="count-pill">${ex.length}</span></h3></div>
+      ${ex.length ? `<div class="exercise-list">${ex.map(e=>exerciseRow(e)).join('')}</div>` : `<div class="empty-state">No matching exercises.</div>`}
+    </div>
+  `;
+}
+
+/* ============ ACTIONS ============ */
+function toggleExercise(id){
+  const e = exercises.find(x=>x.id===id);
+  if(e){ e.status = e.status === 'pending' ? 'completed' : 'pending'; }
+  render();
+}
+function deleteExercise(id){
+  exercises = exercises.filter(x=>x.id!==id);
+  render();
+}
+function deleteResource(id){
+  resources = resources.filter(x=>x.id!==id);
+  render();
+}
+
+/* ---- modals ---- */
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+
+function openResourceModal(subject){
+  document.getElementById('resSubject').value = subject && subjectMeta[subject] ? subject : 'english';
+  document.getElementById('resTitle').value = '';
+  document.getElementById('resPath').value = '';
+  document.getElementById('resTags').value = '';
+  document.getElementById('resDate').value = todayISO();
+  openModal('resourceModalOverlay');
+}
+function submitResource(){
+  const title = document.getElementById('resTitle').value.trim();
+  if(!title){ alert('Please enter a title.'); return; }
+  const subject = document.getElementById('resSubject').value;
+  const path = document.getElementById('resPath').value.trim();
+  const tags = document.getElementById('resTags').value.split(',').map(t=>t.trim()).filter(Boolean);
+  const createdAt = document.getElementById('resDate').value || todayISO();
+  resources.push({ id:'r'+(idCounter++), subject, title, path, tags, createdAt });
+  closeModal('resourceModalOverlay');
+  render();
+}
+
+function openExerciseModal(subject){
+  document.getElementById('exSubject').value = subject && subjectMeta[subject] ? subject : 'english';
+  document.getElementById('exTitle').value = '';
+  document.getElementById('exChapter').value = '';
+  document.getElementById('exDue').value = '';
+  openModal('exerciseModalOverlay');
+}
+function submitExercise(){
+  const title = document.getElementById('exTitle').value.trim();
+  if(!title){ alert('Please enter a title.'); return; }
+  const subject = document.getElementById('exSubject').value;
+  const chapter = document.getElementById('exChapter').value.trim();
+  const dueDate = document.getElementById('exDue').value;
+  exercises.push({ id:'e'+(idCounter++), subject, title, chapter, dueDate, status:'pending' });
+  closeModal('exerciseModalOverlay');
+  render();
+}
+
+// close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(ov=>{
+  ov.addEventListener('click', (e)=>{ if(e.target === ov) ov.classList.remove('open'); });
+});
+
+/* ============ INIT ============ */
+render();
+</script>
+</body>
+</html>

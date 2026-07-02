@@ -509,9 +509,10 @@
     justify-content:center;
     border-radius:6px;
     transition:background .12s ease, color .12s ease;
+    touch-action:none;
   }
   .drag-handle:hover{ background:#EEF0F6; color:var(--ink); }
-  .drag-handle:active{ cursor:grabbing; }
+  .drag-handle:active{ cursor:grabbing; color:var(--ink); background:#E2E6F0; }
 
   /* Local inline highlight inside notes */
   .inline-highlight{
@@ -544,7 +545,7 @@
     gap:10px;
   }
   .res-card:hover{ box-shadow:var(--shadow-hover); transform:translateY(-2px); }
-  .res-card.drag-over{ border:2px dashed var(--chinese-deep); background:#F0F8FF; }
+  .res-card.drag-over{ border:2px dashed var(--chinese-deep); background:#EBF5FF; box-shadow:0 0 0 3px rgba(124,180,232,0.25); transform:scale(1.01) !important; }
   .res-card::before{
     content:"";
     position:absolute;
@@ -633,7 +634,7 @@
   }
   .ex-card:hover{ box-shadow:var(--shadow); }
   .ex-card.pinned{ border-color:#FCD34D; background:#FFFEF7; }
-  .ex-card.drag-over{ border:2px dashed var(--chinese-deep); background:#F0F8FF; }
+  .ex-card.drag-over{ border:2px dashed var(--chinese-deep); background:#EBF5FF; box-shadow:0 0 0 3px rgba(124,180,232,0.25); }
   
   .ex-row{
     display:flex;
@@ -1492,10 +1493,11 @@ function removeInlineHighlight(subj, highlightedWord){
 
 /* ============ RESTRICTED DRAG AND DROP HANDLERS ============ */
 function enableDrag(e, handleEl){
-  // Find card parent and enable draggable only when mouse presses drag handle
+  e.stopPropagation();
   const card = handleEl.closest('.res-card, .ex-card');
   if(card){
     card.setAttribute('draggable', 'true');
+    card._dragEnabledByHandle = true;
   }
 }
 
@@ -1503,34 +1505,71 @@ function disableDrag(e, handleEl){
   const card = handleEl.closest('.res-card, .ex-card');
   if(card){
     card.setAttribute('draggable', 'false');
+    card._dragEnabledByHandle = false;
   }
 }
 
 function handleDragStart(e, type, id){
-  dragSrcEl = e.target;
+  const card = e.currentTarget;
+  // Only allow drag if initiated from the handle
+  if(!card._dragEnabledByHandle){
+    e.preventDefault();
+    return false;
+  }
+  dragSrcEl = card;
   dragType = type;
   e.dataTransfer.effectAllowed = 'move';
   e.dataTransfer.setData('text/plain', id);
-  e.target.style.opacity = '0.5';
+  // Slight delay so opacity change happens after drag image is captured
+  setTimeout(() => { card.style.opacity = '0.45'; card.style.transform = 'scale(0.98)'; }, 0);
 }
 
 function handleDragEnd(e){
-  e.target.style.opacity = '1';
-  e.target.setAttribute('draggable', 'false');
-  document.querySelectorAll('.res-card, .ex-card').forEach(el => el.classList.remove('drag-over'));
+  const card = e.currentTarget;
+  card.style.opacity = '';
+  card.style.transform = '';
+  card.setAttribute('draggable', 'false');
+  card._dragEnabledByHandle = false;
+  document.querySelectorAll('.res-card, .ex-card').forEach(el => {
+    el.classList.remove('drag-over');
+    el.style.outline = '';
+  });
 }
 
 function handleDragOver(e){
-  if (e.preventDefault) e.preventDefault();
+  e.preventDefault();
   e.dataTransfer.dropEffect = 'move';
   const card = e.target.closest('.res-card, .ex-card');
-  if(card) card.classList.add('drag-over');
+  if(card && card !== dragSrcEl){
+    // Clear all others first
+    document.querySelectorAll('.res-card, .ex-card').forEach(el => {
+      if(el !== card) el.classList.remove('drag-over');
+    });
+    card.classList.add('drag-over');
+  }
   return false;
 }
 
+function handleDragLeave(e){
+  const card = e.currentTarget;
+  // Only remove if actually leaving the card (not entering a child)
+  if(!card.contains(e.relatedTarget)){
+    card.classList.remove('drag-over');
+  }
+}
+
 function handleDrop(e, targetId){
-  if (e.stopPropagation) e.stopPropagation();
+  e.preventDefault();
+  e.stopPropagation();
   const srcId = e.dataTransfer.getData('text/plain');
+
+  // Clean up visual states immediately
+  document.querySelectorAll('.res-card, .ex-card').forEach(el => {
+    el.classList.remove('drag-over');
+    el.style.opacity = '';
+    el.style.transform = '';
+  });
+
   if (srcId === targetId) return false;
 
   if (dragType === 'resource') {
@@ -2014,7 +2053,7 @@ function resourceCard(r){
   const statusBadge = isDone ? `✅ Completed` : isNotStarted ? `⏳ Plan Start: ${r.startDate||'Not set'}` : `📖 In Progress`;
 
   return `
-    <div class="res-card ${isDone ? 'completed' : ''}" draggable="false" ondragstart="handleDragStart(event, 'resource', '${r.id}')" ondragend="handleDragEnd(event)" ondragover="handleDragOver(event)" ondrop="handleDrop(event, '${r.id}')">
+    <div class="res-card ${isDone ? 'completed' : ''}" draggable="false" ondragstart="handleDragStart(event, 'resource', '${r.id}')" ondragend="handleDragEnd(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, '${r.id}')">
       <div class="res-top">
         <div class="res-title-wrap">
           <span class="drag-handle" title="按住此处拖动排序" onmousedown="enableDrag(event, this)" onmouseup="disableDrag(event, this)">⠿</span>
@@ -2055,7 +2094,7 @@ function exerciseCard(e){
   }
 
   return `
-    <div class="ex-card ${checked?'completed':''} ${e.pinned?'pinned':''}" draggable="false" ondragstart="handleDragStart(event, 'exercise', '${e.id}')" ondragend="handleDragEnd(event)" ondragover="handleDragOver(event)" ondrop="handleDrop(event, '${e.id}')">
+    <div class="ex-card ${checked?'completed':''} ${e.pinned?'pinned':''}" draggable="false" ondragstart="handleDragStart(event, 'exercise', '${e.id}')" ondragend="handleDragEnd(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, '${e.id}')">
       <div class="ex-row">
         <span class="drag-handle" title="按住此处拖动排序" onmousedown="enableDrag(event, this)" onmouseup="disableDrag(event, this)">⠿</span>
         <div class="ex-check ${checked?'checked':''}" onclick="toggleExerciseMain('${e.id}')" title="Click to toggle main status">

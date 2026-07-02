@@ -497,27 +497,33 @@
   .priority-medium{ background:#FEF3C7; color:#B45309; border:1px solid #FDE68A; }
   .priority-low{ background:#E1EFFE; color:#1E429F; border:1px solid #C3D9FF; }
 
-  /* Drag handle */
+  /* Drag handle restricted to ⠿ icon area only */
   .drag-handle{
     cursor:grab;
     color:var(--ink-faint);
-    font-size:16px;
-    padding:0 6px;
+    font-size:17px;
+    padding:2px 8px;
     user-select:none;
     display:inline-flex;
     align-items:center;
     justify-content:center;
+    border-radius:6px;
+    transition:background .12s ease, color .12s ease;
   }
+  .drag-handle:hover{ background:#EEF0F6; color:var(--ink); }
   .drag-handle:active{ cursor:grabbing; }
 
   /* Local inline highlight inside notes */
   .inline-highlight{
     background:#FEF08A;
     color:#78350F;
-    padding:1px 6px;
+    padding:2px 6px;
     border-radius:4px;
     font-weight:700;
+    cursor:pointer;
+    transition:filter .15s ease;
   }
+  .inline-highlight:hover{ filter:brightness(0.95); }
 
   /* ---- resource cards ---- */
   .resource-grid{
@@ -553,7 +559,7 @@
   .res-title-wrap{ display:flex; align-items:flex-start; gap:8px; flex:1; }
   .res-check{
     width:19px; height:19px; border-radius:5px; border:2px solid #D3D6DE; flex-shrink:0; cursor:pointer;
-    display:flex; align-items:center; justify-content:center; background:#fff; margin-top:1px;
+    display:flex; align-items:center; justify-content:center; background:#fff; margin-top:2px;
   }
   .res-check.checked{ background:var(--chinese-deep); border-color:var(--chinese-deep); }
   .res-check svg{ width:12px; height:12px; color:#fff; opacity:0; }
@@ -749,7 +755,6 @@
     border-radius:var(--radius);
     padding:18px;
     box-shadow:var(--shadow);
-    cursor:pointer;
     transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
     position:relative;
     display:flex;
@@ -781,6 +786,7 @@
     color:var(--ink-soft);
     padding:4px 8px;
     border-radius:6px;
+    cursor:pointer;
   }
   .score-numbers{
     display:flex;
@@ -816,19 +822,19 @@
   }
   .score-module-item span:last-child{ font-weight:700; color:var(--ink); }
 
-  /* Highlight Notes */
+  /* Highlight Notes Box */
   .score-note-box{
     margin-top:12px;
-    padding:10px 12px;
+    padding:12px 14px;
     border-radius:10px;
-    font-size:12px;
+    font-size:12.5px;
     font-weight:600;
-    line-height:1.45;
-    border-left:4px solid;
+    line-height:1.55;
+    background:#F8F9FC;
+    border:1px solid var(--line);
+    color:var(--ink);
+    user-select:text;
   }
-  .score-note-blue{ background:#EFF6FF; color:#1E3A8A; border-color:#3B82F6; }
-  .score-note-pink{ background:#FDF2F8; color:#831843; border-color:#EC4899; }
-  .score-note-brown{ background:#FEF3C7; color:#78350F; border-color:#D97706; }
 
   /* Subject Progress Bar Overview Panel */
   .subject-progress-card{
@@ -1243,16 +1249,8 @@
     </div>
     
     <div class="field" style="margin-top:10px;">
-      <label>💡 Study Note (支持局部高亮：用 ==重点词== 实现高亮提醒)</label>
-      <textarea id="scNote" rows="2" placeholder="e.g. 作文注意 ==首尾呼应==，听力多听 ==Section 3== 陷阱"></textarea>
-    </div>
-    <div class="field">
-      <label>🎨 Note Highlight Color</label>
-      <select id="scNoteColor">
-        <option value="blue">📘 Soft Blue (浅蓝色主题)</option>
-        <option value="pink">🌸 Soft Pink (浅粉色主题)</option>
-        <option value="brown">🟤 Soft Brown (奶茶棕主题)</option>
-      </select>
+      <label>💡 Study Note (长按拖动选中主卡片或横幅上的文字即可直接划线高亮！也可在此处用 ==文本== 标记)</label>
+      <textarea id="scNote" rows="3" placeholder="e.g. 作文注意 ==首尾呼应==，听力多听 ==Section 3== 陷阱"></textarea>
     </div>
 
     <div class="field" style="margin-top:10px;">
@@ -1348,8 +1346,7 @@ const sampleExercises = [
 const sampleSubjectScores = {
   english: {
     maxScore: 150, currentScore: 138, targetScore: 145,
-    note: '💡 听力重点抓 ==Section 3 选项陷阱==，写作 Task 2 务必保持 ==逻辑分层与论据呼应==！',
-    noteColor: 'blue',
+    note: '💡 听力重点抓 ==Section 3 选项陷阱==，写作 Task 2 务必保持 ==逻辑分层与论据呼应==！长按选中任意文字即可高亮。',
     modules: [
       { name: 'Listening Comprehension (听力精听)', score: 30, duration:'45 mins' },
       { name: 'Reading & Skimming (多篇深度阅读)', score: 45, duration:'60 mins' },
@@ -1359,8 +1356,7 @@ const sampleSubjectScores = {
   },
   chinese: {
     maxScore: 150, currentScore: 132, targetScore: 140,
-    note: '🌸 大作文务必注意 ==首尾呼应与新颖论据穿插==，文言文翻译抓紧 ==核心实词踩点给分==！',
-    noteColor: 'pink',
+    note: '🌸 大作文务必注意 ==首尾呼应与新颖论据穿插==，文言文翻译抓紧 ==核心实词踩点给分==！长按选中任意文字即可划线。',
     modules: [
       { name: '语言文字基础与古诗词鉴赏', score: 35, duration:'30 mins' },
       { name: '文言文阅读理解与文言翻译', score: 25, duration:'30 mins' },
@@ -1371,7 +1367,6 @@ const sampleSubjectScores = {
   politic: {
     maxScore: 100, currentScore: 88, targetScore: 94,
     note: '🟤 选择题多错必须保持在 ==2道以内==，大题论述牢记 ==哲学原理搭配结合材料== 作答！',
-    noteColor: 'brown',
     modules: [
       { name: '单项与多项选择题 (Multiple Choice)', score: 50, duration:'35 mins' },
       { name: '马哲原理与政经材料分析论述大题', score: 30, duration:'60 mins' },
@@ -1390,7 +1385,6 @@ let exercises = JSON.parse(localStorage.getItem('study_exercises_pro')) || sampl
 let subjectScores = JSON.parse(localStorage.getItem('study_scores_pro')) || sampleSubjectScores;
 let countdownConfig = JSON.parse(localStorage.getItem('study_countdown_pro')) || sampleCountdown;
 
-// Make sure all tasks and subtasks have defaults
 exercises.forEach(ex => {
   if(!ex.priority) ex.priority = 'medium';
   if(typeof ex.pinned !== 'boolean') ex.pinned = false;
@@ -1418,20 +1412,22 @@ let state = {
   filterType:'all',
   filterStatus:'all',
   filterPriority:'all',
-  resTab:'all' // 'all', 'not_started', 'pending', 'completed'
+  resTab:'all'
 };
 
-let idCounter = 800;
+let idCounter = 900;
 let dragSrcEl = null;
-let dragType = null; // 'resource' | 'exercise'
+let dragType = null;
 
 /* ============ HELPERS ============ */
 function escapeHtml(str){
   return String(str||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 }
-function parseInlineHighlight(str){
+function parseInlineHighlight(subj, str){
   const escaped = escapeHtml(str);
-  return escaped.replace(/==([^=]+)==/g, '<span class="inline-highlight">$1</span>');
+  return escaped.replace(/==([^=]+)==/g, (match, p1) => {
+    return `<span class="inline-highlight" title="Click to remove highlight" onclick="removeInlineHighlight('${subj}', '${escapeHtml(p1).replace(/'/g, "\\'")}')">${p1}</span>`;
+  });
 }
 function matchesSearch(text, q){
   if(!q) return true;
@@ -1452,10 +1448,6 @@ function getPriorityBadge(priority){
   }
 }
 
-function getSubjColor(subj){
-  return customSubjects[subj] ? customSubjects[subj].color : '#4B5563';
-}
-
 function checkIsOverdue(dueDateStr, completed){
   if(completed || !dueDateStr) return false;
   return dueDateStr < todayISO();
@@ -1470,6 +1462,94 @@ function getOverdueCount(){
     });
   });
   return count;
+}
+
+/* ============ MOUSE SELECTION HIGHLIGHT ============ */
+function handleNoteSelection(subj){
+  const selection = window.getSelection();
+  if(!selection || selection.isCollapsed) return;
+  const text = selection.toString().trim();
+  if(!text || text.length < 1) return;
+
+  const sc = subjectScores[subj];
+  if(!sc || !sc.note) return;
+
+  if(sc.note.includes(text) && !sc.note.includes(`==${text}==`)){
+    sc.note = sc.note.replace(text, `==${text}==`);
+    selection.removeAllRanges();
+    saveStateToStorage();
+    render();
+  }
+}
+
+function removeInlineHighlight(subj, highlightedWord){
+  const sc = subjectScores[subj];
+  if(!sc || !sc.note) return;
+  sc.note = sc.note.replace(`==${highlightedWord}==`, highlightedWord);
+  saveStateToStorage();
+  render();
+}
+
+/* ============ RESTRICTED DRAG AND DROP HANDLERS ============ */
+function enableDrag(e, handleEl){
+  // Find card parent and enable draggable only when mouse presses drag handle
+  const card = handleEl.closest('.res-card, .ex-card');
+  if(card){
+    card.setAttribute('draggable', 'true');
+  }
+}
+
+function disableDrag(e, handleEl){
+  const card = handleEl.closest('.res-card, .ex-card');
+  if(card){
+    card.setAttribute('draggable', 'false');
+  }
+}
+
+function handleDragStart(e, type, id){
+  dragSrcEl = e.target;
+  dragType = type;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', id);
+  e.target.style.opacity = '0.5';
+}
+
+function handleDragEnd(e){
+  e.target.style.opacity = '1';
+  e.target.setAttribute('draggable', 'false');
+  document.querySelectorAll('.res-card, .ex-card').forEach(el => el.classList.remove('drag-over'));
+}
+
+function handleDragOver(e){
+  if (e.preventDefault) e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  const card = e.target.closest('.res-card, .ex-card');
+  if(card) card.classList.add('drag-over');
+  return false;
+}
+
+function handleDrop(e, targetId){
+  if (e.stopPropagation) e.stopPropagation();
+  const srcId = e.dataTransfer.getData('text/plain');
+  if (srcId === targetId) return false;
+
+  if (dragType === 'resource') {
+    const srcIdx = resources.findIndex(x => x.id === srcId);
+    const tgtIdx = resources.findIndex(x => x.id === targetId);
+    if(srcIdx > -1 && tgtIdx > -1){
+      const [removed] = resources.splice(srcIdx, 1);
+      resources.splice(tgtIdx, 0, removed);
+    }
+  } else if (dragType === 'exercise') {
+    const srcIdx = exercises.findIndex(x => x.id === srcId);
+    const tgtIdx = exercises.findIndex(x => x.id === targetId);
+    if(srcIdx > -1 && tgtIdx > -1){
+      const [removed] = exercises.splice(srcIdx, 1);
+      exercises.splice(tgtIdx, 0, removed);
+    }
+  }
+  render();
+  return false;
 }
 
 /* ============ BACKUP EXPORT & IMPORT ============ */
@@ -1504,7 +1584,7 @@ function importData(event){
         
         saveStateToStorage();
         render();
-        alert('🎉 Backup successfully imported! All tasks, resources, subjects and scores have been restored.');
+        alert('🎉 Backup successfully imported!');
       } else {
         alert('❌ Invalid backup file format.');
       }
@@ -1545,7 +1625,6 @@ function updateHeaderAndSidebar(){
   document.getElementById('statPending').textContent = pendingCount;
   document.getElementById('statDone').textContent = doneCount;
 
-  // Render sidebar subjects dynamic list
   const subjListEl = document.getElementById('sidebarSubjectsList');
   if(subjListEl){
     subjListEl.innerHTML = Object.keys(customSubjects).map(key => {
@@ -1561,7 +1640,6 @@ function updateHeaderAndSidebar(){
     }).join('');
   }
 
-  // Render sidebar progress bars dynamic list
   const progBarsEl = document.getElementById('sidebarProgressBarsList');
   if(progBarsEl){
     progBarsEl.innerHTML = Object.keys(customSubjects).map(key => {
@@ -1621,12 +1699,7 @@ function switchView(viewName){
   render();
 }
 
-document.getElementById('globalSearch').addEventListener('input', (e)=>{
-  state.search = e.target.value.trim();
-  render();
-});
-
-/* ============ JUMP TO SECTION FROM TOP STATS ============ */
+/* ============ JUMP TO SECTION ============ */
 function jumpToSection(sectionType){
   state.view = 'dashboard';
   if(sectionType === 'resources'){
@@ -1639,55 +1712,10 @@ function jumpToSection(sectionType){
     state.filterStatus = 'completed';
   }
   render();
-  // Scroll to section
   setTimeout(() => {
     const el = document.getElementById(sectionType === 'resources' ? 'resourcesSection' : 'exercisesSection');
     if(el) el.scrollIntoView({ behavior: 'smooth' });
   }, 50);
-}
-
-/* ============ DRAG AND DROP HANDLERS ============ */
-function handleDragStart(e, type, id){
-  dragSrcEl = e.target;
-  dragType = type;
-  e.dataTransfer.effectAllowed = 'move';
-  e.dataTransfer.setData('text/plain', id);
-  e.target.style.opacity = '0.5';
-}
-
-function handleDragEnd(e){
-  e.target.style.opacity = '1';
-  document.querySelectorAll('.res-card, .ex-card').forEach(el => el.style.border = '');
-}
-
-function handleDragOver(e){
-  if (e.preventDefault) e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
-  return false;
-}
-
-function handleDrop(e, targetId){
-  if (e.stopPropagation) e.stopPropagation();
-  const srcId = e.dataTransfer.getData('text/plain');
-  if (srcId === targetId) return false;
-
-  if (dragType === 'resource') {
-    const srcIdx = resources.findIndex(x => x.id === srcId);
-    const tgtIdx = resources.findIndex(x => x.id === targetId);
-    if(srcIdx > -1 && tgtIdx > -1){
-      const [removed] = resources.splice(srcIdx, 1);
-      resources.splice(tgtIdx, 0, removed);
-    }
-  } else if (dragType === 'exercise') {
-    const srcIdx = exercises.findIndex(x => x.id === srcId);
-    const tgtIdx = exercises.findIndex(x => x.id === targetId);
-    if(srcIdx > -1 && tgtIdx > -1){
-      const [removed] = exercises.splice(srcIdx, 1);
-      exercises.splice(tgtIdx, 0, removed);
-    }
-  }
-  render();
-  return false;
 }
 
 /* ============ RENDER ============ */
@@ -1760,7 +1788,6 @@ function setResTab(tab){
 
 /* ---- Dashboard Home ---- */
 function renderDashboardHome(){
-  // Filter resources based on tab
   const notStartedRes = resources.filter(r => r.status === 'not_started' || (r.startDate && r.startDate > todayISO()));
   const pendingRes = resources.filter(r => r.status === 'pending' && (!r.startDate || r.startDate <= todayISO()));
   const completedRes = resources.filter(r => r.status === 'completed');
@@ -1779,100 +1806,48 @@ function renderDashboardHome(){
   if(state.filterStatus !== 'all') ex = ex.filter(e => e.status === state.filterStatus);
 
   const overdueCount = getOverdueCount();
-  const overallProg = getSubjectProgress(null);
 
   return `
     <div class="page-head">
       <div>
         <h2>🚀 Dashboard Overview</h2>
-        <p>Real-time subject progress, score breakdown with inline highlights & drag-and-drop task bank</p>
+        <p>Real-time subject progress, interactive note highlights & restricted-handle drag sorting</p>
       </div>
     </div>
 
-    <!-- Section 1: Subject Progress Bars Overview -->
-    <div class="subject-progress-card">
-      <div class="section-head" style="margin-bottom:0;">
-        <h3>📊 Subject Progress Bars Overview</h3>
-        <span style="font-size:12px; color:var(--ink-soft); font-weight:600;">Overall Progress: ${overallProg.percent}%</span>
-      </div>
-      <div class="sp-grid">
-        ${Object.keys(customSubjects).map(subj => {
-          const prog = getSubjectProgress(subj);
-          const meta = customSubjects[subj];
-          return `
-            <div class="sp-subject-box" onclick="switchView('${subj}')" style="cursor:pointer;">
-              <div class="sp-subject-top">
-                <span style="display:flex; align-items:center; gap:6px;">
-                  <span class="dot" style="width:8px; height:8px; border-radius:50%; background:${meta.color}; display:inline-block;"></span>
-                  ${escapeHtml(meta.label)}
-                </span>
-                <span style="font-size:14px; color:${meta.color};">${prog.percent}%</span>
-              </div>
-              <div class="sp-big-bar"><div class="sp-big-fill" style="width:${prog.percent}%; background:${meta.color};"></div></div>
-              <div style="font-size:11px; color:var(--ink-faint); margin-top:6px; font-weight:600;">
-                ${prog.doneUnits} / ${prog.totalUnits} completed tasks
-              </div>
-            </div>
-          `;
-        }).join('')}
-      </div>
-
-      <!-- Migrated Overall Programs Summary right under subject program boxes -->
-      <div class="overall-summary-box">
-        <div>
-          <span style="font-size:11px; font-weight:800; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.05em;">🌟 Overall Programs Summary</span>
-          <div style="font-size:15px; font-weight:800; color:var(--ink); margin-top:2px;">All Subjects & Subtasks Completion</div>
-        </div>
-        <div style="flex:1; min-width:240px;">
-          <div style="display:flex; justify-content:space-between; font-size:12.5px; font-weight:700; margin-bottom:5px;">
-            <span>Total Combined Completion Rate</span>
-            <span style="color:var(--chinese-deep);">${overallProg.percent}%</span>
-          </div>
-          <div style="height:10px; border-radius:5px; background:#DDE2F3; overflow:hidden;">
-            <div style="width:${overallProg.percent}%; height:100%; background:linear-gradient(90deg,var(--chinese-deep),var(--english-deep));"></div>
-          </div>
-        </div>
-        <div style="text-align:right;">
-          <span style="font-size:22px; font-weight:800; color:var(--ink);">${overallProg.doneUnits}</span>
-          <span style="font-size:13px; font-weight:600; color:var(--ink-faint);">/ ${overallProg.totalUnits} units</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Section 2: Subject Score Breakdown & Notes (With Inline Highlights & Est Duration) -->
+    <!-- Section 1: Subject Score Breakdown & Notes (With Selection Highlight & Est Duration) -->
     <div class="section-head">
-      <h3>🎯 Subject Score Breakdown & Notes (Click card to configure notes & duration)</h3>
+      <h3>🎯 Subject Score Breakdown & Notes (长按拖动选中文字即可精准高亮，点击高亮可取消)</h3>
     </div>
     <div class="score-overview-grid">
       ${Object.keys(customSubjects).map(subj => {
         const sc = subjectScores[subj] || { maxScore:100, currentScore:0, targetScore:90, modules:[] };
         const meta = customSubjects[subj];
-        const noteColorClass = sc.noteColor ? `score-note-${sc.noteColor}` : 'score-note-blue';
         return `
-          <div class="score-card" onclick="openScoreModal('${subj}')">
+          <div class="score-card">
             <div>
-              <div class="score-card-top">
+              <div class="score-card-top" onclick="openScoreModal('${subj}')">
                 <div class="score-card-title">
                   <span class="dot" style="width:10px; height:10px; border-radius:3px; background:${meta.color};"></span>
                   ${escapeHtml(meta.label)} Score
                 </div>
                 <span class="score-click-hint">⚙️ Click to Edit</span>
               </div>
-              <div class="score-numbers">
+              <div class="score-numbers" onclick="openScoreModal('${subj}')">
                 <span class="score-curr" style="color:${meta.color};">${sc.currentScore}</span>
                 <span class="score-max">/ ${sc.maxScore} pts</span>
               </div>
               <div class="score-target-pill">🎯 Target Goal: ${sc.targetScore} pts</div>
               
               ${sc.note ? `
-                <div class="score-note-box ${noteColorClass}">
+                <div class="score-note-box" onmouseup="handleNoteSelection('${subj}')" title="长按拖动选中文字即可高亮！">
                   <span>💡</span>
-                  <span>${parseInlineHighlight(sc.note)}</span>
+                  <span>${parseInlineHighlight(subj, sc.note)}</span>
                 </div>
               ` : ''}
             </div>
 
-            <div class="score-module-list">
+            <div class="score-module-list" onclick="openScoreModal('${subj}')">
               ${(sc.modules||[]).map(m => `
                 <div class="score-module-item">
                   <span>${escapeHtml(m.name)} ${m.duration ? `<span style="color:#B45309; background:#FEF3C7; padding:1px 5px; border-radius:4px; font-size:10.5px; margin-left:4px;">⏱️ ${escapeHtml(m.duration)}</span>` : ''}</span>
@@ -1887,7 +1862,7 @@ function renderDashboardHome(){
 
     ${renderFilterBar()}
 
-    <!-- Section 3: Exercise Bank (Drag & Drop, Pinning, Integrated Subtasks & Overdue Entrance) -->
+    <!-- Section 2: Exercise Bank -->
     ${showExercises ? `
     <div class="section" id="exercisesSection">
       <div class="section-head">
@@ -1904,7 +1879,7 @@ function renderDashboardHome(){
       ${ex.length ? `<div class="exercise-list">${ex.map(e=>exerciseCard(e)).join('')}</div>` : `<div class="empty-state">No exercises matching selection.</div>`}
     </div>` : ''}
 
-    <!-- Section 4 (MOVED TO BOTTOM): Knowledge Resources with Not Started Group, Tabs & Drag & Drop -->
+    <!-- Section 3 (MOVED TO BOTTOM): Knowledge Resources -->
     ${showResources ? `
     <div class="section" id="resourcesSection" style="margin-top:40px; padding-top:20px; border-top:2px dashed var(--line);">
       <div class="section-head">
@@ -1929,7 +1904,6 @@ function renderSubjectPage(subject){
   const meta = customSubjects[subject] || { label:subject, color:'#4B5563', tagline:'' };
   const sc = subjectScores[subject] || { maxScore:100, currentScore:0, targetScore:90, modules:[] };
   const prog = getSubjectProgress(subject);
-  const noteColorClass = sc.noteColor ? `score-note-${sc.noteColor}` : 'score-note-blue';
 
   let res = resources.filter(r=>r.subject===subject);
   let ex = exercises.filter(e=>e.subject===subject);
@@ -1991,9 +1965,9 @@ function renderSubjectPage(subject){
       </div>
       
       ${sc.note ? `
-        <div class="score-note-box ${noteColorClass}" style="width:100%;">
+        <div class="score-note-box" onmouseup="handleNoteSelection('${subject}')" title="长按拖动选中文字即可高亮！" style="width:100%;">
           <span>💡</span>
-          <span>${parseInlineHighlight(sc.note)}</span>
+          <span>${parseInlineHighlight(subject, sc.note)}</span>
         </div>
       ` : ''}
     </div>
@@ -2033,17 +2007,17 @@ function renderSubjectPage(subject){
   `;
 }
 
-/* ---- Draggable Resource Card ---- */
+/* ---- Draggable Resource Card (Restricted Handle) ---- */
 function resourceCard(r){
   const isDone = r.status === 'completed';
   const isNotStarted = r.status === 'not_started' || (r.startDate && r.startDate > todayISO());
   const statusBadge = isDone ? `✅ Completed` : isNotStarted ? `⏳ Plan Start: ${r.startDate||'Not set'}` : `📖 In Progress`;
 
   return `
-    <div class="res-card ${isDone ? 'completed' : ''}" draggable="true" ondragstart="handleDragStart(event, 'resource', '${r.id}')" ondragend="handleDragEnd(event)" ondragover="handleDragOver(event)" ondrop="handleDrop(event, '${r.id}')">
+    <div class="res-card ${isDone ? 'completed' : ''}" draggable="false" ondragstart="handleDragStart(event, 'resource', '${r.id}')" ondragend="handleDragEnd(event)" ondragover="handleDragOver(event)" ondrop="handleDrop(event, '${r.id}')">
       <div class="res-top">
         <div class="res-title-wrap">
-          <span class="drag-handle" title="Drag and drop to reorder">⠿</span>
+          <span class="drag-handle" title="按住此处拖动排序" onmousedown="enableDrag(event, this)" onmouseup="disableDrag(event, this)">⠿</span>
           <div class="res-check ${isDone ? 'checked' : ''}" onclick="toggleResourceStatus('${r.id}')" title="Click to toggle completed status">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L19 7"/></svg>
           </div>
@@ -2067,7 +2041,7 @@ function resourceCard(r){
   `;
 }
 
-/* ---- Draggable Exercise Card with Pinning & Integrated Subtask Editor ---- */
+/* ---- Draggable Exercise Card (Restricted Handle) ---- */
 function exerciseCard(e){
   const subtasks = e.subtasks || [];
   const totalSt = subtasks.length;
@@ -2081,9 +2055,9 @@ function exerciseCard(e){
   }
 
   return `
-    <div class="ex-card ${checked?'completed':''} ${e.pinned?'pinned':''}" draggable="true" ondragstart="handleDragStart(event, 'exercise', '${e.id}')" ondragend="handleDragEnd(event)" ondragover="handleDragOver(event)" ondrop="handleDrop(event, '${e.id}')">
+    <div class="ex-card ${checked?'completed':''} ${e.pinned?'pinned':''}" draggable="false" ondragstart="handleDragStart(event, 'exercise', '${e.id}')" ondragend="handleDragEnd(event)" ondragover="handleDragOver(event)" ondrop="handleDrop(event, '${e.id}')">
       <div class="ex-row">
-        <span class="drag-handle" title="Drag and drop to reorder">⠿</span>
+        <span class="drag-handle" title="按住此处拖动排序" onmousedown="enableDrag(event, this)" onmouseup="disableDrag(event, this)">⠿</span>
         <div class="ex-check ${checked?'checked':''}" onclick="toggleExerciseMain('${e.id}')" title="Click to toggle main status">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L19 7"/></svg>
         </div>
@@ -2241,7 +2215,7 @@ function submitNewSubject(){
     text: color,
     tagline: tagline || `${label} study dashboard`
   };
-  subjectScores[id] = { maxScore:100, currentScore:0, targetScore:90, note:'', noteColor:'blue', modules:[] };
+  subjectScores[id] = { maxScore:100, currentScore:0, targetScore:90, note:'', modules:[] };
 
   closeModal('subjectModalOverlay');
   switchView(id);
@@ -2458,16 +2432,15 @@ function saveCountdown(){
   closeModal('countdownModalOverlay'); render();
 }
 
-/* ---- Score Modal with Duration & Highlight Notes ---- */
+/* ---- Score Modal ---- */
 function openScoreModal(subj){
-  const sc = subjectScores[subj] || { maxScore:100, currentScore:0, targetScore:90, note:'', noteColor:'blue', modules:[] };
+  const sc = subjectScores[subj] || { maxScore:100, currentScore:0, targetScore:90, note:'', modules:[] };
   document.getElementById('editScoreSubject').value = subj;
   document.getElementById('scoreModalTitle').textContent = `${customSubjects[subj]?customSubjects[subj].label:subj} Score Configuration`;
   document.getElementById('scCurrent').value = sc.currentScore;
   document.getElementById('scTarget').value = sc.targetScore;
   document.getElementById('scMax').value = sc.maxScore;
   document.getElementById('scNote').value = sc.note || '';
-  document.getElementById('scNoteColor').value = sc.noteColor || 'blue';
 
   const container = document.getElementById('scoreModulesContainer');
   container.innerHTML = '';
@@ -2499,7 +2472,6 @@ function saveScoreConfig(){
   const target = parseFloat(document.getElementById('scTarget').value) || 0;
   const max = parseFloat(document.getElementById('scMax').value) || 100;
   const note = document.getElementById('scNote').value.trim();
-  const noteColor = document.getElementById('scNoteColor').value || 'blue';
 
   const modRows = document.querySelectorAll('.module-edit-row');
   const modules = [];
@@ -2512,7 +2484,7 @@ function saveScoreConfig(){
     }
   });
 
-  subjectScores[subj] = { currentScore: curr, targetScore: target, maxScore: max, note, noteColor, modules };
+  subjectScores[subj] = { currentScore: curr, targetScore: target, maxScore: max, note, modules };
   closeModal('scoreModalOverlay'); render();
 }
 

@@ -91,7 +91,7 @@
 
   .search-wrap{
     flex:1;
-    max-width:480px;
+    max-width:440px;
   }
   .search-box{
     position:relative;
@@ -123,6 +123,12 @@
     background:#fff;
   }
   .search-box input::placeholder{ color:var(--ink-faint); }
+
+  .top-actions{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
 
   /* ---------- STATS ROW + COUNTDOWN ---------- */
   .stats-row{
@@ -871,6 +877,9 @@
     cursor:pointer;
     transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
     position:relative;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
   }
   .score-card:hover{
     transform:translateY(-3px);
@@ -931,6 +940,23 @@
   }
   .score-module-item span:last-child{ font-weight:700; color:var(--ink); }
 
+  /* Highlight Notes */
+  .score-note-box{
+    margin-top:12px;
+    padding:10px 12px;
+    border-radius:10px;
+    font-size:12px;
+    font-weight:600;
+    line-height:1.45;
+    border-left:4px solid;
+    display:flex;
+    align-items:flex-start;
+    gap:6px;
+  }
+  .score-note-blue{ background:#EFF6FF; color:#1E3A8A; border-color:#3B82F6; }
+  .score-note-pink{ background:#FDF2F8; color:#831843; border-color:#EC4899; }
+  .score-note-brown{ background:#FEF3C7; color:#78350F; border-color:#D97706; }
+
   /* Subject Progress Bar Overview Panel */
   .subject-progress-card{
     background:var(--card);
@@ -981,10 +1007,16 @@
     margin-bottom:24px;
     box-shadow:var(--shadow);
     display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .sb-top-row{
+    display:flex;
     flex-wrap:wrap;
     align-items:center;
     justify-content:space-between;
     gap:16px;
+    width:100%;
   }
   .sb-left h3{ margin:0; font-size:17px; font-weight:800; display:flex; align-items:center; gap:10px;}
   .sb-left p{ margin:4px 0 0 0; font-size:13px; color:var(--ink-soft); }
@@ -1023,7 +1055,7 @@
   .modal h3{ margin:0 0 16px 0; font-size:17px; font-weight:800; display:flex; justify-content:space-between; align-items:center; }
   .field{ margin-bottom:14px; }
   .field label{ display:block; font-size:12px; font-weight:700; color:var(--ink-soft); margin-bottom:5px; }
-  .field input, .field select{
+  .field input, .field select, .field textarea{
     width:100%;
     font-family:inherit;
     font-size:13.5px;
@@ -1033,7 +1065,7 @@
     background:#FBFBFD;
     color:var(--ink);
   }
-  .field input:focus, .field select:focus{ outline:none; border-color:var(--chinese-deep); background:#fff; }
+  .field input:focus, .field select:focus, .field textarea:focus{ outline:none; border-color:var(--chinese-deep); background:#fff; }
   .modal-actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:20px; }
 
   .module-edit-row{
@@ -1056,13 +1088,18 @@
     <div class="top-row">
       <div class="brand">
         <h1>📚 Study Resource Dashboard</h1>
-        <p>Quantitative Trackers, Editable Tasks & Resources at Bottom</p>
+        <p>Quantitative Trackers, Highlight Notes & Portable Backup Sync</p>
       </div>
       <div class="search-wrap">
         <div class="search-box">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
           <input id="globalSearch" type="text" placeholder="Search resources, exercises, trackers or sub-tasks..." />
         </div>
+      </div>
+      <div class="top-actions">
+        <button class="btn btn-ghost btn-small" onclick="exportData()" title="Export all tasks, resources, notes and scores to JSON backup file">💾 Export Backup</button>
+        <button class="btn btn-ghost btn-small" onclick="document.getElementById('importFileInput').click()" title="Restore dashboard data from JSON backup file">📂 Import Backup</button>
+        <input type="file" id="importFileInput" style="display:none" accept=".json" onchange="importData(event)" />
       </div>
     </div>
     
@@ -1325,7 +1362,7 @@
   </div>
 </div>
 
-<!-- Modal: Subject Score Details & Configuration -->
+<!-- Modal: Subject Score Details & Configuration with Notes -->
 <div class="modal-overlay" id="scoreModalOverlay">
   <div class="modal">
     <h3>🎯 <span id="scoreModalTitle">Subject Score Configuration</span></h3>
@@ -1344,6 +1381,20 @@
         <input id="scMax" type="number" />
       </div>
     </div>
+    
+    <div class="field" style="margin-top:10px;">
+      <label>💡 Study Note & Exam Strategy (高亮心得与重点策略)</label>
+      <textarea id="scNote" rows="2" placeholder="Write exam reminders, key pitfalls or target focus..."></textarea>
+    </div>
+    <div class="field">
+      <label>🎨 Note Highlight Color</label>
+      <select id="scNoteColor">
+        <option value="blue">📘 Soft Blue (浅蓝色主题)</option>
+        <option value="pink">🌸 Soft Pink (浅粉色主题)</option>
+        <option value="brown">🟤 Soft Brown (奶茶棕主题)</option>
+      </select>
+    </div>
+
     <div class="field" style="margin-top:10px;">
       <label>Score Breakdown & Modules (Name & Points)</label>
       <div id="scoreModulesContainer"></div>
@@ -1468,6 +1519,8 @@ const sampleSubjectScores = {
     maxScore: 150,
     currentScore: 138,
     targetScore: 145,
+    note: '💡 Listening Section 3 accuracy & Writing Task 2 coherence are key to breaking through 140+!',
+    noteColor: 'blue',
     modules: [
       { name: 'Listening Comprehension (听力精听)', score: 30 },
       { name: 'Reading & Skimming (多篇深度阅读)', score: 45 },
@@ -1479,6 +1532,8 @@ const sampleSubjectScores = {
     maxScore: 150,
     currentScore: 132,
     targetScore: 140,
+    note: '🌸 作文务必注意首尾呼应和最新论据素材穿插，文言文翻译抓紧核心实词得分点！',
+    noteColor: 'pink',
     modules: [
       { name: '语言文字基础与古诗词鉴赏', score: 35 },
       { name: '文言文阅读理解与文言翻译', score: 25 },
@@ -1490,6 +1545,8 @@ const sampleSubjectScores = {
     maxScore: 100,
     currentScore: 88,
     targetScore: 94,
+    note: '🟤 选择题多错必须保持在2道以内，大题论述牢记哲学原理原理搭配结合材料作答！',
+    noteColor: 'brown',
     modules: [
       { name: '单项与多项选择题 (Multiple Choice)', score: 50 },
       { name: '马哲原理与政经材料分析论述大题', score: 30 },
@@ -1540,7 +1597,7 @@ let state = {
   resTab:'all' // 'all', 'pending', 'completed'
 };
 
-let idCounter = 600;
+let idCounter = 700;
 
 /* ============ HELPERS ============ */
 function escapeHtml(str){
@@ -1569,6 +1626,55 @@ function getPriorityWeight(priority){
   if(priority === 'high') return 3;
   if(priority === 'medium') return 2;
   return 1;
+}
+
+/* ============ BACKUP EXPORT & IMPORT ============ */
+function exportData(){
+  const backup = {
+    version: 'UltimatePro-2026-V2',
+    exportDate: new Date().toISOString(),
+    resources,
+    exercises,
+    subjectScores,
+    countdownConfig,
+    quantitativeTrackers
+  };
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backup, null, 2));
+  const downloadAnchor = document.createElement('a');
+  downloadAnchor.setAttribute("href", dataStr);
+  const dateName = todayISO();
+  downloadAnchor.setAttribute("download", `study_dashboard_backup_${dateName}.json`);
+  document.body.appendChild(downloadAnchor);
+  downloadAnchor.click();
+  downloadAnchor.remove();
+}
+
+function importData(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      const imported = JSON.parse(e.target.result);
+      if(imported && (imported.resources || imported.exercises || imported.subjectScores)){
+        if(imported.resources) resources = imported.resources;
+        if(imported.exercises) exercises = imported.exercises;
+        if(imported.subjectScores) subjectScores = imported.subjectScores;
+        if(imported.countdownConfig) countdownConfig = imported.countdownConfig;
+        if(imported.quantitativeTrackers) quantitativeTrackers = imported.quantitativeTrackers;
+        
+        saveStateToStorage();
+        render();
+        alert('🎉 Backup successfully imported! All tasks, resources, notes and score configurations have been restored.');
+      } else {
+        alert('❌ Invalid backup file format. Please select a valid Study Dashboard JSON backup.');
+      }
+    } catch(err){
+      alert('❌ Error reading file: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
 }
 
 /* ============ PROGRESS & STATS CALCULATIONS ============ */
@@ -1799,18 +1905,25 @@ function renderDashboardHome(){
   const recentCompleted = exercises.filter(e=>e.status==='completed').slice(-5).reverse();
   const dotColor = s => s==='english' ? 'var(--english-deep)' : s==='chinese' ? 'var(--chinese-deep)' : 'var(--politic-deep)';
 
-  // Resources section tabs calculation
   const pendingRes = resources.filter(r => r.status !== 'completed');
   const completedRes = resources.filter(r => r.status === 'completed');
   let displayedRes = resources;
   if(state.resTab === 'pending') displayedRes = pendingRes;
   if(state.resTab === 'completed') displayedRes = completedRes;
 
+  // Auto push completed resources to the bottom
+  displayedRes.sort((a,b) => {
+    if (a.status !== b.status) {
+      return a.status === 'completed' ? 1 : -1;
+    }
+    return (b.createdAt || '').localeCompare(a.createdAt || '');
+  });
+
   return `
     <div class="page-head">
       <div>
         <h2>🚀 Dashboard Overview</h2>
-        <p>Combined quantitative progress bars, emergency tasks & editable knowledge base at bottom</p>
+        <p>Combined quantitative progress bars, highlighted study notes & backup data sync</p>
       </div>
     </div>
 
@@ -1853,29 +1966,40 @@ function renderDashboardHome(){
       ${quantitativeTrackers.length ? `<div class="tracker-grid">${quantitativeTrackers.map(t=>trackerCard(t)).join('')}</div>` : `<div class="empty-state">No custom trackers yet. Add one to start counting pages or lessons!</div>`}
     </div>
 
-    <!-- Section 3: Subject Scores & Clickable Configuration -->
+    <!-- Section 3: Subject Scores & Highlight Notes (Clickable Configuration) -->
     <div class="section-head">
-      <h3>🎯 Subject Score Breakdown (Click card to inspect & configure scores)</h3>
+      <h3>🎯 Subject Score Breakdown & Notes (Click card to inspect & configure notes)</h3>
     </div>
     <div class="score-overview-grid">
       ${['english', 'chinese', 'politic'].map(subj => {
         const sc = subjectScores[subj];
         const meta = subjectMeta[subj];
         const color = subj === 'english' ? 'var(--english-deep)' : subj === 'chinese' ? 'var(--chinese-deep)' : 'var(--politic-deep)';
+        const noteColorClass = sc.noteColor ? `score-note-${sc.noteColor}` : 'score-note-blue';
         return `
           <div class="score-card" onclick="openScoreModal('${subj}')">
-            <div class="score-card-top">
-              <div class="score-card-title">
-                <span class="dot" style="width:10px; height:10px; border-radius:3px; background:${color};"></span>
-                ${meta.label} Score
+            <div>
+              <div class="score-card-top">
+                <div class="score-card-title">
+                  <span class="dot" style="width:10px; height:10px; border-radius:3px; background:${color};"></span>
+                  ${meta.label} Score
+                </div>
+                <span class="score-click-hint">⚙️ Click to Edit</span>
               </div>
-              <span class="score-click-hint">⚙️ Click to Edit</span>
+              <div class="score-numbers">
+                <span class="score-curr" style="color:${color};">${sc.currentScore}</span>
+                <span class="score-max">/ ${sc.maxScore} pts</span>
+              </div>
+              <div class="score-target-pill">🎯 Target Goal: ${sc.targetScore} pts</div>
+              
+              ${sc.note ? `
+                <div class="score-note-box ${noteColorClass}">
+                  <span>💡</span>
+                  <span>${escapeHtml(sc.note)}</span>
+                </div>
+              ` : ''}
             </div>
-            <div class="score-numbers">
-              <span class="score-curr" style="color:${color};">${sc.currentScore}</span>
-              <span class="score-max">/ ${sc.maxScore} pts</span>
-            </div>
-            <div class="score-target-pill">🎯 Target Goal: ${sc.targetScore} pts</div>
+
             <div class="score-module-list">
               ${sc.modules.map(m => `
                 <div class="score-module-item">
@@ -1960,6 +2084,7 @@ function renderSubjectPage(subject){
   const sc = subjectScores[subject];
   const prog = getSubjectProgress(subject);
   const color = subject === 'english' ? 'var(--english-deep)' : subject === 'chinese' ? 'var(--chinese-deep)' : 'var(--politic-deep)';
+  const noteColorClass = sc.noteColor ? `score-note-${sc.noteColor}` : 'score-note-blue';
 
   let res = resources.filter(r=>r.subject===subject);
   let ex = exercises.filter(e=>e.subject===subject);
@@ -1980,12 +2105,19 @@ function renderSubjectPage(subject){
   const showResources = state.filterType === 'all' || state.filterType === 'resources';
   const showExercises = state.filterType === 'all' || state.filterType === 'exercises';
 
-  // Resource Tabs filtering for subject page
   const pendingRes = res.filter(r => r.status !== 'completed');
   const completedRes = res.filter(r => r.status === 'completed');
   let displayedRes = res;
   if(state.resTab === 'pending') displayedRes = pendingRes;
   if(state.resTab === 'completed') displayedRes = completedRes;
+
+  // Auto push completed resources to the bottom
+  displayedRes.sort((a,b) => {
+    if (a.status !== b.status) {
+      return a.status === 'completed' ? 1 : -1;
+    }
+    return (b.createdAt || '').localeCompare(a.createdAt || '');
+  });
 
   return `
     <div class="page-head">
@@ -1994,39 +2126,46 @@ function renderSubjectPage(subject){
 
     <!-- Subject Score & Combined Progress Header Banner -->
     <div class="subject-banner">
-      <div class="sb-left">
-        <h3>
-          ${meta.label} Score & Progress
-          <button class="btn btn-ghost btn-small" onclick="openScoreModal('${subject}')">⚙️ Configure Score</button>
-        </h3>
-        <p>${meta.tagline}</p>
-        <div style="margin-top:10px; width:290px;">
-          <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700; margin-bottom:4px;">
-            <span>Combined Progress</span>
-            <span style="color:${color};">${prog.percent}%</span>
+      <div class="sb-top-row">
+        <div class="sb-left">
+          <h3>
+            ${meta.label} Score & Progress
+            <button class="btn btn-ghost btn-small" onclick="openScoreModal('${subject}')">⚙️ Configure Score & Notes</button>
+          </h3>
+          <p>${meta.tagline}</p>
+          <div style="margin-top:10px; width:290px;">
+            <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700; margin-bottom:4px;">
+              <span>Combined Progress</span>
+              <span style="color:${color};">${prog.percent}%</span>
+            </div>
+            <div style="height:7px; border-radius:4px; background:#E0E4EE; overflow:hidden;">
+              <div style="width:${prog.percent}%; height:100%; background:${color};"></div>
+            </div>
           </div>
-          <div style="height:7px; border-radius:4px; background:#E0E4EE; overflow:hidden;">
-            <div style="width:${prog.percent}%; height:100%; background:${color};"></div>
+        </div>
+        <div class="sb-scores">
+          <div class="sb-score-box">
+            <div class="sb-label">Current Score</div>
+            <div class="sb-val" style="color:${color};">${sc.currentScore} <span style="font-size:13px; font-weight:600; color:var(--ink-faint);">/ ${sc.maxScore}</span></div>
+          </div>
+          <div class="sb-score-box">
+            <div class="sb-label">Target Goal</div>
+            <div class="sb-val" style="color:#2F9155;">${sc.targetScore} <span style="font-size:13px; font-weight:600; color:var(--ink-faint);">pts</span></div>
+          </div>
+          <div class="sb-score-box">
+            <div class="sb-label">Combined Units Done</div>
+            <div class="sb-val">${prog.doneUnits} <span style="font-size:13px; font-weight:600; color:var(--ink-faint);">/ ${prog.totalUnits}</span></div>
           </div>
         </div>
       </div>
-      <div class="sb-scores">
-        <div class="sb-score-box">
-          <div class="sb-label">Current Score</div>
-          <div class="sb-val" style="color:${color};">${sc.currentScore} <span style="font-size:13px; font-weight:600; color:var(--ink-faint);">/ ${sc.maxScore}</span></div>
+      
+      ${sc.note ? `
+        <div class="score-note-box ${noteColorClass}" style="width:100%;">
+          <span>💡</span>
+          <span>${escapeHtml(sc.note)}</span>
         </div>
-        <div class="sb-score-box">
-          <div class="sb-label">Target Goal</div>
-          <div class="sb-val" style="color:#2F9155;">${sc.targetScore} <span style="font-size:13px; font-weight:600; color:var(--ink-faint);">pts</span></div>
-        </div>
-        <div class="sb-score-box">
-          <div class="sb-label">Combined Units Done</div>
-          <div class="sb-val">${prog.doneUnits} <span style="font-size:13px; font-weight:600; color:var(--ink-faint);">/ ${prog.totalUnits}</span></div>
-        </div>
-      </div>
+      ` : ''}
     </div>
-
-    ${renderFilterBar()}
 
     <!-- Quantitative Trackers for this subject -->
     <div class="section">
@@ -2472,7 +2611,7 @@ function saveCountdown(){
   render();
 }
 
-/* ---- Score Modal ---- */
+/* ---- Score Modal with Notes ---- */
 function openScoreModal(subj){
   const sc = subjectScores[subj];
   if(!sc) return;
@@ -2481,6 +2620,8 @@ function openScoreModal(subj){
   document.getElementById('scCurrent').value = sc.currentScore;
   document.getElementById('scTarget').value = sc.targetScore;
   document.getElementById('scMax').value = sc.maxScore;
+  document.getElementById('scNote').value = sc.note || '';
+  document.getElementById('scNoteColor').value = sc.noteColor || 'blue';
 
   const container = document.getElementById('scoreModulesContainer');
   container.innerHTML = '';
@@ -2510,6 +2651,8 @@ function saveScoreConfig(){
   const curr = parseFloat(document.getElementById('scCurrent').value) || 0;
   const target = parseFloat(document.getElementById('scTarget').value) || 0;
   const max = parseFloat(document.getElementById('scMax').value) || 100;
+  const note = document.getElementById('scNote').value.trim();
+  const noteColor = document.getElementById('scNoteColor').value || 'blue';
 
   const modRows = document.querySelectorAll('.module-edit-row');
   const modules = [];
@@ -2525,6 +2668,8 @@ function saveScoreConfig(){
     currentScore: curr,
     targetScore: target,
     maxScore: max,
+    note: note,
+    noteColor: noteColor,
     modules: modules
   };
 

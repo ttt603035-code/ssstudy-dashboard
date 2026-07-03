@@ -285,7 +285,7 @@
     color:var(--ink-soft);
   }
 
-  /* Sidebar Subject Progress Bars Section & Overall Summary directly below it */
+  /* Sidebar Subject Progress Bars Section */
   .side-progress-section{
     background:#FAFBFC;
     border:1px solid var(--line);
@@ -325,7 +325,7 @@
     transition:width .3s ease;
   }
 
-  /* Total Progress Box directly under subject programs */
+  /* Total Progress Box */
   .side-progress{
     margin-top:6px;
     background:linear-gradient(155deg,#F6F4FF 0%,#F2F7FF 100%);
@@ -497,19 +497,21 @@
   .priority-medium{ background:#FEF3C7; color:#B45309; border:1px solid #FDE68A; }
   .priority-low{ background:#E1EFFE; color:#1E429F; border:1px solid #C3D9FF; }
 
-  /* Drag handle restricted to ⠿ icon area only */
+  /* Drag handle restricted: uses SVG grip and completely prevents text selection */
   .drag-handle{
     cursor:grab;
     color:var(--ink-faint);
-    font-size:17px;
-    padding:2px 8px;
+    padding:4px 8px;
     user-select:none;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -webkit-touch-callout:none;
+    touch-action:none;
     display:inline-flex;
     align-items:center;
     justify-content:center;
     border-radius:6px;
     transition:background .12s ease, color .12s ease;
-    touch-action:none;
   }
   .drag-handle:hover{ background:#EEF0F6; color:var(--ink); }
   .drag-handle:active{ cursor:grabbing; color:var(--ink); background:#E2E6F0; }
@@ -876,20 +878,6 @@
     height:100%;
     border-radius:5px;
     transition:width .3s ease;
-  }
-
-  /* Overall Summary inside Dashboard Overview under subject programs */
-  .overall-summary-box{
-    margin-top:20px;
-    padding:16px 18px;
-    background:linear-gradient(135deg, #F4F6FA 0%, #EFF1F6 100%);
-    border:1px solid #DDE2F3;
-    border-radius:12px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:20px;
-    flex-wrap:wrap;
   }
 
   /* Specific Subject Header Score Banner */
@@ -1491,9 +1479,10 @@ function removeInlineHighlight(subj, highlightedWord){
   render();
 }
 
-/* ============ RESTRICTED DRAG AND DROP HANDLERS ============ */
+/* ============ RESTRICTED DRAG AND DROP HANDLERS (SVG Grip ONLY) ============ */
 function enableDrag(e, handleEl){
-  e.stopPropagation();
+  // Stop propagation to prevent touch text selection dropdowns on iPad / Safari
+  if(e && e.preventDefault && e.type.indexOf('touch') > -1) e.preventDefault();
   const card = handleEl.closest('.res-card, .ex-card');
   if(card){
     card.setAttribute('draggable', 'true');
@@ -1511,7 +1500,6 @@ function disableDrag(e, handleEl){
 
 function handleDragStart(e, type, id){
   const card = e.currentTarget;
-  // Only allow drag if initiated from the handle
   if(!card._dragEnabledByHandle){
     e.preventDefault();
     return false;
@@ -1520,7 +1508,6 @@ function handleDragStart(e, type, id){
   dragType = type;
   e.dataTransfer.effectAllowed = 'move';
   e.dataTransfer.setData('text/plain', id);
-  // Slight delay so opacity change happens after drag image is captured
   setTimeout(() => { card.style.opacity = '0.45'; card.style.transform = 'scale(0.98)'; }, 0);
 }
 
@@ -1532,7 +1519,6 @@ function handleDragEnd(e){
   card._dragEnabledByHandle = false;
   document.querySelectorAll('.res-card, .ex-card').forEach(el => {
     el.classList.remove('drag-over');
-    el.style.outline = '';
   });
 }
 
@@ -1541,7 +1527,6 @@ function handleDragOver(e){
   e.dataTransfer.dropEffect = 'move';
   const card = e.target.closest('.res-card, .ex-card');
   if(card && card !== dragSrcEl){
-    // Clear all others first
     document.querySelectorAll('.res-card, .ex-card').forEach(el => {
       if(el !== card) el.classList.remove('drag-over');
     });
@@ -1552,7 +1537,6 @@ function handleDragOver(e){
 
 function handleDragLeave(e){
   const card = e.currentTarget;
-  // Only remove if actually leaving the card (not entering a child)
   if(!card.contains(e.relatedTarget)){
     card.classList.remove('drag-over');
   }
@@ -1563,7 +1547,6 @@ function handleDrop(e, targetId){
   e.stopPropagation();
   const srcId = e.dataTransfer.getData('text/plain');
 
-  // Clean up visual states immediately
   document.querySelectorAll('.res-card, .ex-card').forEach(el => {
     el.classList.remove('drag-over');
     el.style.opacity = '';
@@ -1836,6 +1819,11 @@ function renderDashboardHome(){
   if(state.resTab === 'pending') displayedRes = pendingRes;
   if(state.resTab === 'completed') displayedRes = completedRes;
 
+  displayedRes.sort((a,b) => {
+    if (a.status !== b.status) return a.status === 'completed' ? 1 : -1;
+    return 0;
+  });
+
   const showResources = state.filterType === 'all' || state.filterType === 'resources';
   const showExercises = state.filterType === 'all' || state.filterType === 'exercises';
 
@@ -1843,6 +1831,12 @@ function renderDashboardHome(){
   if(state.filterSubject !== 'all') ex = ex.filter(e => e.subject === state.filterSubject);
   if(state.filterPriority !== 'all') ex = ex.filter(e => e.priority === state.filterPriority);
   if(state.filterStatus !== 'all') ex = ex.filter(e => e.status === state.filterStatus);
+
+  ex.sort((a,b) => {
+    if(a.pinned !== b.pinned) return b.pinned ? 1 : -1;
+    if(a.status !== b.status) return a.status === 'pending' ? -1 : 1;
+    return 0;
+  });
 
   const overdueCount = getOverdueCount();
 
@@ -1961,6 +1955,11 @@ function renderSubjectPage(subject){
   if(state.resTab === 'pending') displayedRes = pendingRes;
   if(state.resTab === 'completed') displayedRes = completedRes;
 
+  displayedRes.sort((a,b) => {
+    if (a.status !== b.status) return a.status === 'completed' ? 1 : -1;
+    return 0;
+  });
+
   const overdueCount = getOverdueCount();
 
   return `
@@ -2046,7 +2045,7 @@ function renderSubjectPage(subject){
   `;
 }
 
-/* ---- Draggable Resource Card (Restricted Handle) ---- */
+/* ---- Draggable Resource Card (Restricted Handle SVG Grip) ---- */
 function resourceCard(r){
   const isDone = r.status === 'completed';
   const isNotStarted = r.status === 'not_started' || (r.startDate && r.startDate > todayISO());
@@ -2056,7 +2055,13 @@ function resourceCard(r){
     <div class="res-card ${isDone ? 'completed' : ''}" draggable="false" ondragstart="handleDragStart(event, 'resource', '${r.id}')" ondragend="handleDragEnd(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, '${r.id}')">
       <div class="res-top">
         <div class="res-title-wrap">
-          <span class="drag-handle" title="按住此处拖动排序" onmousedown="enableDrag(event, this)" onmouseup="disableDrag(event, this)">⠿</span>
+          <span class="drag-handle" title="按住拖拽排序" onmousedown="enableDrag(event, this)" onmouseup="disableDrag(event, this)" ontouchstart="enableDrag(event, this)" ontouchend="disableDrag(event, this)">
+            <svg width="14" height="18" viewBox="0 0 14 18" fill="currentColor">
+              <circle cx="4" cy="4" r="1.8"/><circle cx="10" cy="4" r="1.8"/>
+              <circle cx="4" cy="9" r="1.8"/><circle cx="10" cy="9" r="1.8"/>
+              <circle cx="4" cy="14" r="1.8"/><circle cx="10" cy="14" r="1.8"/>
+            </svg>
+          </span>
           <div class="res-check ${isDone ? 'checked' : ''}" onclick="toggleResourceStatus('${r.id}')" title="Click to toggle completed status">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L19 7"/></svg>
           </div>
@@ -2080,7 +2085,7 @@ function resourceCard(r){
   `;
 }
 
-/* ---- Draggable Exercise Card (Restricted Handle) ---- */
+/* ---- Draggable Exercise Card (Restricted Handle SVG Grip) ---- */
 function exerciseCard(e){
   const subtasks = e.subtasks || [];
   const totalSt = subtasks.length;
@@ -2096,7 +2101,13 @@ function exerciseCard(e){
   return `
     <div class="ex-card ${checked?'completed':''} ${e.pinned?'pinned':''}" draggable="false" ondragstart="handleDragStart(event, 'exercise', '${e.id}')" ondragend="handleDragEnd(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, '${e.id}')">
       <div class="ex-row">
-        <span class="drag-handle" title="按住此处拖动排序" onmousedown="enableDrag(event, this)" onmouseup="disableDrag(event, this)">⠿</span>
+        <span class="drag-handle" title="按住拖拽排序" onmousedown="enableDrag(event, this)" onmouseup="disableDrag(event, this)" ontouchstart="enableDrag(event, this)" ontouchend="disableDrag(event, this)">
+          <svg width="14" height="18" viewBox="0 0 14 18" fill="currentColor">
+            <circle cx="4" cy="4" r="1.8"/><circle cx="10" cy="4" r="1.8"/>
+            <circle cx="4" cy="9" r="1.8"/><circle cx="10" cy="9" r="1.8"/>
+            <circle cx="4" cy="14" r="1.8"/><circle cx="10" cy="14" r="1.8"/>
+          </svg>
+        </span>
         <div class="ex-check ${checked?'checked':''}" onclick="toggleExerciseMain('${e.id}')" title="Click to toggle main status">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L19 7"/></svg>
         </div>

@@ -991,7 +991,7 @@
   <header class="top">
     <div class="top-row">
       <div class="brand">
-        <h1>📚 Study Resource Dashboard</h1>
+        <h1>Study Resource Dashboard</h1>
         <p>Custom Subjects, Draggable Tasks & Editable Resources</p>
       </div>
       <div class="search-wrap">
@@ -1001,8 +1001,8 @@
         </div>
       </div>
       <div class="top-actions">
-        <button class="btn btn-ghost btn-small" onclick="exportData()" title="Export JSON backup">💾 Export</button>
-        <button class="btn btn-ghost btn-small" onclick="document.getElementById('importFileInput').click()" title="Restore from JSON backup">📂 Import</button>
+        <button class="btn btn-ghost btn-small" onclick="exportData()" title="Export JSON backup">Export</button>
+        <button class="btn btn-ghost btn-small" onclick="document.getElementById('importFileInput').click()" title="Restore from JSON backup">Import</button>
         <input type="file" id="importFileInput" style="display:none" accept=".json" onchange="importData(event)" />
       </div>
     </div>
@@ -1012,7 +1012,7 @@
       <div class="stat-card stat-total" onclick="jumpToSection('resources')" title="Click to view Knowledge Resources">
         <div class="label">
           <span class="label-left"><span class="dot"></span>Total Resources</span>
-          <span style="font-size:10px; color:#4B5563;">👆 Click to view</span>
+          <span style="font-size:10px; color:#4B5563;">Click to view</span>
         </div>
         <div class="value" id="statTotal">0</div>
         <div class="sub">editable & draggable base</div>
@@ -1022,7 +1022,7 @@
       <div class="stat-card stat-pending" onclick="jumpToSection('pending_tasks')" title="Click to view Pending Exercises">
         <div class="label">
           <span class="label-left"><span class="dot"></span>Pending Tasks</span>
-          <span style="font-size:10px; color:#B04D6E;">👆 Click to view</span>
+          <span style="font-size:10px; color:#B04D6E;">Click to view</span>
         </div>
         <div class="value" id="statPending">0</div>
         <div class="sub" id="statSubtasksText">prioritized emergency list</div>
@@ -1032,7 +1032,7 @@
       <div class="stat-card stat-done" onclick="jumpToSection('completed_tasks')" title="Click to view Completed Exercises">
         <div class="label">
           <span class="label-left"><span class="dot"></span>Completed Tasks</span>
-          <span style="font-size:10px; color:#3F76AD;">👆 Click to view</span>
+          <span style="font-size:10px; color:#3F76AD;">Click to view</span>
         </div>
         <div class="value" id="statDone">0</div>
         <div class="sub">exercises done</div>
@@ -1042,7 +1042,7 @@
       <div class="stat-card stat-countdown">
         <div class="label">
           <span class="label-left"><span class="dot"></span>Target Countdown</span>
-          <button class="countdown-edit-btn" onclick="openCountdownModal()">✏️ Edit Date</button>
+          <button class="countdown-edit-btn" onclick="openCountdownModal()">Edit Date</button>
         </div>
         <div class="countdown-value" id="countdownDays">-- Days</div>
         <div class="countdown-sub" id="countdownTitle">2026 National Exam Target</div>
@@ -1085,7 +1085,7 @@
 <!-- Modal: Edit Countdown -->
 <div class="modal-overlay" id="countdownModalOverlay">
   <div class="modal">
-    <h3>⏳ Edit Target Countdown</h3>
+    <h3>Edit Target Countdown</h3>
     <div class="field">
       <label>Target Event Name</label>
       <input id="cdTitleInput" type="text" placeholder="e.g. 2026 Final Exam / College Entrance Exam" />
@@ -1104,7 +1104,7 @@
 <!-- Modal: Add Subject -->
 <div class="modal-overlay" id="subjectModalOverlay">
   <div class="modal">
-    <h3>✨ Add New Subject</h3>
+    <h3>Add New Subject</h3>
     <div class="field">
       <label>Subject ID / Code (English letters only, e.g. physics, math)</label>
       <input id="newSubjId" type="text" placeholder="e.g. physics" />
@@ -1131,7 +1131,7 @@
 <!-- Modal: Overdue Reminders List -->
 <div class="modal-overlay" id="overdueModalOverlay">
   <div class="modal" style="width:580px;">
-    <h3>⚠️ Overdue Tasks & Subtasks Reminders</h3>
+    <h3>Overdue Reminders</h3>
     <div id="overdueListContainer" style="display:flex; flex-direction:column; gap:10px; max-height:60vh; overflow-y:auto; margin-bottom:14px;"></div>
     <div class="modal-actions">
       <button class="btn btn-primary" onclick="closeModal('overdueModalOverlay')">Close</button>
@@ -1159,9 +1159,9 @@
     <div class="field">
       <label>Status Classification</label>
       <select id="resStatus">
-        <option value="not_started">⏳ Not Started (未开始)</option>
-        <option value="pending" selected>📖 In Progress (研读中)</option>
-        <option value="completed">✅ Completed (已学完)</option>
+        <option value="not_started">Not Started (未开始)</option>
+        <option value="pending" selected>In Progress (研读中)</option>
+        <option value="completed">Completed (已学完)</option>
       </select>
     </div>
     <div class="field">
@@ -1196,9 +1196,9 @@
       <div class="field">
         <label>Priority</label>
         <select id="exPriority">
-          <option value="high">🔥 High Priority</option>
-          <option value="medium" selected>⚡ Medium Priority</option>
-          <option value="low">☕ Low Priority</option>
+          <option value="high">High Priority</option>
+          <option value="medium" selected>Medium Priority</option>
+          <option value="low">Low Priority</option>
         </select>
       </div>
     </div>
@@ -1234,7 +1234,7 @@
 <!-- Modal: Subject Score Details & Configuration with Duration -->
 <div class="modal-overlay" id="scoreModalOverlay">
   <div class="modal" style="width:580px;">
-    <h3>🎯 <span id="scoreModalTitle">Subject Score Configuration</span></h3>
+    <h3><span id="scoreModalTitle">Subject Score Configuration</span></h3>
     <input type="hidden" id="editScoreSubject" />
     <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px;">
       <div class="field">
@@ -1252,7 +1252,7 @@
     </div>
     
     <div class="field" style="margin-top:10px;">
-      <label>💡 Study Note (长按拖动选中主卡片或横幅上的文字即可直接划线高亮！也可在此处用 ==文本== 标记)</label>
+      <label>Study Note (长按拖动选中主卡片或横幅上的文字即可直接划线高亮！也可在此处用 ==文本== 标记)</label>
       <textarea id="scNote" rows="3" placeholder="e.g. 作文注意 ==首尾呼应==，听力多听 ==Section 3== 陷阱"></textarea>
     </div>
 
@@ -1295,7 +1295,7 @@ const sampleResources = [
 
 const sampleExercises = [
   {
-    id:'e1', subject:'english', title:'🔥 Advanced Grammar & Cloze Test Simulation', priority:'high', pinned:true, chapter:'Unit 6', dueDate:'2026-07-02', status:'pending',
+    id:'e1', subject:'english', title:'Advanced Grammar & Cloze Test Simulation', priority:'high', pinned:true, chapter:'Unit 6', dueDate:'2026-07-02', status:'pending',
     subtasks: [
       { id:'st1', title:'Review Non-finite Verbs & Subjunctive Mood rules', completed:true, dueDate:'2026-07-01' },
       { id:'st2', title:'Complete timed Cloze test practice (20 mins)', completed:false, dueDate:'2026-07-02' },
@@ -1303,42 +1303,42 @@ const sampleExercises = [
     ]
   },
   {
-    id:'e2', subject:'english', title:'⚡ Timed IELTS Reading Passages Set 3', priority:'medium', pinned:false, chapter:'Reading Module', dueDate:'2026-07-05', status:'pending',
+    id:'e2', subject:'english', title:'Timed IELTS Reading Passages Set 3', priority:'medium', pinned:false, chapter:'Reading Module', dueDate:'2026-07-05', status:'pending',
     subtasks: [
       { id:'st4', title:'Passage 1: Climate Change & Ocean Currents', completed:true, dueDate:'2026-07-04' },
       { id:'st5', title:'Passage 2: Artificial Intelligence in Modern Medicine', completed:false, dueDate:'2026-07-05' }
     ]
   },
   {
-    id:'e3', subject:'english', title:'🔥 Weekly Writing Essay: Technology & Society', priority:'high', pinned:false, chapter:'Essay Writing', dueDate:'2026-07-03', status:'pending',
+    id:'e3', subject:'english', title:'Weekly Writing Essay: Technology & Society', priority:'high', pinned:false, chapter:'Essay Writing', dueDate:'2026-07-03', status:'pending',
     subtasks: [
       { id:'st7', title:'Brainstorm 3 main arguments & counter-arguments', completed:true, dueDate:'2026-07-02' },
       { id:'st8', title:'Draft 350-word argumentative essay', completed:false, dueDate:'2026-07-03' }
     ]
   },
   {
-    id:'e4', subject:'chinese', title:'🔥 文言文《苏轼传》重点虚词与段落逐字精译', priority:'high', pinned:true, chapter:'文言文强化', dueDate:'2026-07-03', status:'pending',
+    id:'e4', subject:'chinese', title:'文言文《苏轼传》重点虚词与段落逐字精译', priority:'high', pinned:true, chapter:'文言文强化', dueDate:'2026-07-03', status:'pending',
     subtasks: [
       { id:'st11', title:'标注「乃、其、且、若、所」在段落中的准确语法用法', completed:true, dueDate:'2026-07-02' },
       { id:'st12', title:'笔译第三段完整内容并对比标准答案译文', completed:false, dueDate:'2026-07-03' }
     ]
   },
   {
-    id:'e5', subject:'chinese', title:'⚡ 现代文大阅读《乡土重建》深度简答题专项', priority:'medium', pinned:false, chapter:'散文与评论', dueDate:'2026-07-06', status:'pending',
+    id:'e5', subject:'chinese', title:'现代文大阅读《乡土重建》深度简答题专项', priority:'medium', pinned:false, chapter:'散文与评论', dueDate:'2026-07-06', status:'pending',
     subtasks: [
       { id:'st13', title:'完成勾画作者核心观点与结构分层', completed:true, dueDate:'2026-07-05' },
       { id:'st14', title:'规范作答第4题作用分析题与第5题探究题', completed:false, dueDate:'2026-07-06' }
     ]
   },
   {
-    id:'e6', subject:'politic', title:'🔥 唯物辩证法四大基本规律真题论述大题强化', priority:'high', pinned:true, chapter:'哲学必考章', dueDate:'2026-07-02', status:'pending',
+    id:'e6', subject:'politic', title:'唯物辩证法四大基本规律真题论述大题强化', priority:'high', pinned:true, chapter:'哲学必考章', dueDate:'2026-07-02', status:'pending',
     subtasks: [
       { id:'st19', title:'熟记对立统一规律与量变质变核心答题模板', completed:true, dueDate:'2026-07-01' },
       { id:'st20', title:'全真模拟解答2025年全国真题第38题材料分析题', completed:false, dueDate:'2026-07-02' }
     ]
   },
   {
-    id:'e7', subject:'politic', title:'⚡ 6月国内外重要时政考点单多选题专项刷题（40道）', priority:'medium', pinned:false, chapter:'时政专题', dueDate:'2026-07-05', status:'pending',
+    id:'e7', subject:'politic', title:'6月国内外重要时政考点单多选题专项刷题（40道）', priority:'medium', pinned:false, chapter:'时政专题', dueDate:'2026-07-05', status:'pending',
     subtasks: [
       { id:'st21', title:'通读6月重要大会报告核心结论速记要点', completed:true, dueDate:'2026-07-04' },
       { id:'st22', title:'限时30分钟完成40道选择题并标记盲区', completed:false, dueDate:'2026-07-05' }
@@ -1349,7 +1349,7 @@ const sampleExercises = [
 const sampleSubjectScores = {
   english: {
     maxScore: 150, currentScore: 138, targetScore: 145,
-    note: '💡 听力重点抓 ==Section 3 选项陷阱==，写作 Task 2 务必保持 ==逻辑分层与论据呼应==！长按选中任意文字即可高亮。',
+    note: '听力重点抓 ==Section 3 选项陷阱==，写作 Task 2 务必保持 ==逻辑分层与论据呼应==！长按选中任意文字即可高亮。',
     modules: [
       { name: 'Listening Comprehension (听力精听)', score: 30, duration:'45 mins' },
       { name: 'Reading & Skimming (多篇深度阅读)', score: 45, duration:'60 mins' },
@@ -1359,7 +1359,7 @@ const sampleSubjectScores = {
   },
   chinese: {
     maxScore: 150, currentScore: 132, targetScore: 140,
-    note: '🌸 大作文务必注意 ==首尾呼应与新颖论据穿插==，文言文翻译抓紧 ==核心实词踩点给分==！长按选中任意文字即可划线。',
+    note: '大作文务必注意 ==首尾呼应与新颖论据穿插==，文言文翻译抓紧 ==核心实词踩点给分==！长按选中任意文字即可划线。',
     modules: [
       { name: '语言文字基础与古诗词鉴赏', score: 35, duration:'30 mins' },
       { name: '文言文阅读理解与文言翻译', score: 25, duration:'30 mins' },
@@ -1369,7 +1369,7 @@ const sampleSubjectScores = {
   },
   politic: {
     maxScore: 100, currentScore: 88, targetScore: 94,
-    note: '🟤 选择题多错必须保持在 ==2道以内==，大题论述牢记 ==哲学原理搭配结合材料== 作答！',
+    note: '选择题多错必须保持在 ==2道以内==，大题论述牢记 ==哲学原理搭配结合材料== 作答！',
     modules: [
       { name: '单项与多项选择题 (Multiple Choice)', score: 50, duration:'35 mins' },
       { name: '马哲原理与政经材料分析论述大题', score: 30, duration:'60 mins' },
@@ -1379,7 +1379,7 @@ const sampleSubjectScores = {
 };
 
 const sampleCountdown = {
-  title: '🎯 2026 National Exam / Final Exam Target Day',
+  title: '2026 National Exam / Final Exam Target Day',
   targetDate: '2026-12-25'
 };
 
@@ -1443,11 +1443,11 @@ function todayISO(){
 
 function getPriorityBadge(priority){
   if(priority === 'high'){
-    return `<span class="priority-tag priority-high" title="Urgent / High Priority">🔥 High Priority</span>`;
+    return `<span class="priority-tag priority-high" title="Urgent / High Priority">High Priority</span>`;
   } else if(priority === 'medium'){
-    return `<span class="priority-tag priority-medium" title="Standard / Medium Priority">⚡ Medium Priority</span>`;
+    return `<span class="priority-tag priority-medium" title="Standard / Medium Priority">Medium Priority</span>`;
   } else {
-    return `<span class="priority-tag priority-low" title="Routine / Low Priority">☕ Low Priority</span>`;
+    return `<span class="priority-tag priority-low" title="Routine / Low Priority">Low Priority</span>`;
   }
 }
 
@@ -1710,12 +1710,12 @@ function importData(event){
         
         saveStateToStorage();
         render();
-        alert('🎉 Backup successfully imported!');
+        alert('Backup successfully imported!');
       } else {
-        alert('❌ Invalid backup file format.');
+        alert('Invalid backup file format.');
       }
     } catch(err){
-      alert('❌ Error reading file: ' + err.message);
+      alert('Error reading file: ' + err.message);
     }
   };
   reader.readAsText(file);
@@ -1806,11 +1806,11 @@ function updateCountdownUI(){
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
   if(diffDays > 0){
-    document.getElementById('countdownDays').textContent = `⏳ ${diffDays} Days Left`;
+    document.getElementById('countdownDays').textContent = `${diffDays} Days Left`;
   } else if(diffDays === 0){
-    document.getElementById('countdownDays').textContent = `🔥 Today is the Day!`;
+    document.getElementById('countdownDays').textContent = `Today is the Day!`;
   } else {
-    document.getElementById('countdownDays').textContent = `🏁 Passed by ${Math.abs(diffDays)}d`;
+    document.getElementById('countdownDays').textContent = ` Passed by ${Math.abs(diffDays)}d`;
   }
 }
 
@@ -1895,9 +1895,9 @@ function renderFilterBar(){
         <label>Priority</label>
         <select class="filter-select" id="fPriority" onchange="onFilterChange()">
           <option value="all" ${state.filterPriority==='all'?'selected':''}>All Priorities</option>
-          <option value="high" ${state.filterPriority==='high'?'selected':''}>🔥 High Priority</option>
-          <option value="medium" ${state.filterPriority==='medium'?'selected':''}>⚡ Medium Priority</option>
-          <option value="low" ${state.filterPriority==='low'?'selected':''}>☕ Low Priority</option>
+          <option value="high" ${state.filterPriority==='high'?'selected':''}>High Priority</option>
+          <option value="medium" ${state.filterPriority==='medium'?'selected':''}>Medium Priority</option>
+          <option value="low" ${state.filterPriority==='low'?'selected':''}>Low Priority</option>
         </select>
       </div>
       <div class="filter-group">
@@ -1956,14 +1956,14 @@ function renderDashboardHome(){
   return `
     <div class="page-head">
       <div>
-        <h2>🚀 Dashboard Overview</h2>
+        <h2>Dashboard Overview</h2>
         <p>Real-time subject progress, interactive note highlights & restricted-handle drag sorting</p>
       </div>
     </div>
 
     <!-- Section 1: Subject Score Breakdown & Notes (With Selection Highlight & Est Duration) -->
     <div class="section-head">
-      <h3>🎯 Subject Score Breakdown & Notes (长按拖动选中文字即可精准高亮，点击高亮可取消)</h3>
+      <h3>Subject Score Breakdown & Notes (长按拖动选中文字即可精准高亮，点击高亮可取消)</h3>
     </div>
     <div class="score-overview-grid">
       ${Object.keys(customSubjects).map(subj => {
@@ -1977,17 +1977,17 @@ function renderDashboardHome(){
                   <span class="dot" style="width:10px; height:10px; border-radius:3px; background:${meta.color};"></span>
                   ${escapeHtml(meta.label)} Score
                 </div>
-                <span class="score-click-hint">⚙️ Click to Edit</span>
+                <span class="score-click-hint">️ Click to Edit</span>
               </div>
               <div class="score-numbers" onclick="openScoreModal('${subj}')">
                 <span class="score-curr" style="color:${meta.color};">${sc.currentScore}</span>
                 <span class="score-max">/ ${sc.maxScore} pts</span>
               </div>
-              <div class="score-target-pill">🎯 Target Goal: ${sc.targetScore} pts</div>
+              <div class="score-target-pill">Target Goal: ${sc.targetScore} pts</div>
               
               ${sc.note ? `
                 <div class="score-note-box" onmouseup="handleNoteSelection('${subj}')" title="长按拖动选中文字即可高亮！">
-                  <span>💡</span>
+                  
                   <span>${parseInlineHighlight(subj, sc.note)}</span>
                 </div>
               ` : ''}
@@ -1996,7 +1996,7 @@ function renderDashboardHome(){
             <div class="score-module-list" onclick="openScoreModal('${subj}')">
               ${(sc.modules||[]).map(m => `
                 <div class="score-module-item">
-                  <span>${escapeHtml(m.name)} ${m.duration ? `<span style="color:#B45309; background:#FEF3C7; padding:1px 5px; border-radius:4px; font-size:10.5px; margin-left:4px;">⏱️ ${escapeHtml(m.duration)}</span>` : ''}</span>
+                  <span>${escapeHtml(m.name)} ${m.duration ? `<span style="color:#B45309; background:#FEF3C7; padding:1px 5px; border-radius:4px; font-size:10.5px; margin-left:4px;">Est: ${escapeHtml(m.duration)}</span>` : ''}</span>
                   <span>${m.score} pts</span>
                 </div>
               `).join('')}
@@ -2013,11 +2013,11 @@ function renderDashboardHome(){
     <div class="section" id="exercisesSection">
       <div class="section-head">
         <div style="display:flex; align-items:center; gap:12px;">
-          <h3>📝 Exercise Bank <span class="count-pill">${ex.length}</span></h3>
+          <h3>Exercise Bank <span class="count-pill">${ex.length}</span></h3>
           ${overdueCount > 0 ? `
-            <button class="btn btn-warn btn-small" onclick="openOverdueModal()">⚠️ Overdue Reminders (${overdueCount})</button>
+            <button class="btn btn-warn btn-small" onclick="openOverdueModal()">Overdue Reminders (${overdueCount})</button>
           ` : `
-            <span style="font-size:11.5px; color:#2F9155; font-weight:700; background:#EAF7EE; padding:4px 10px; border-radius:8px;">🌟 All Due Dates On Track</span>
+            <span style="font-size:11.5px; color:#2F9155; font-weight:700; background:#EAF7EE; padding:4px 10px; border-radius:8px;">All Due Dates On Track</span>
           `}
         </div>
         <button class="btn btn-primary" onclick="openExerciseModal(state.filterSubject!=='all'?state.filterSubject:'english')">+ Add Exercise</button>
@@ -2030,12 +2030,12 @@ function renderDashboardHome(){
     <div class="section" id="resourcesSection" style="margin-top:40px; padding-top:20px; border-top:2px dashed var(--line);">
       <div class="section-head">
         <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-          <h3>📚 Knowledge Resources (At Bottom) <span class="count-pill">${displayedRes.length}</span></h3>
+          <h3>Knowledge Resources (At Bottom) <span class="count-pill">${displayedRes.length}</span></h3>
           <div class="res-tab-bar">
             <button class="res-tab-btn ${state.resTab==='all'?'active':''}" onclick="setResTab('all')">All (${resources.length})</button>
-            <button class="res-tab-btn ${state.resTab==='not_started'?'active':''}" onclick="setResTab('not_started')">⏳ Not Started (${notStartedRes.length})</button>
-            <button class="res-tab-btn ${state.resTab==='pending'?'active':''}" onclick="setResTab('pending')">📖 In Progress (${pendingRes.length})</button>
-            <button class="res-tab-btn ${state.resTab==='completed'?'active':''}" onclick="setResTab('completed')">✅ Completed (${completedRes.length})</button>
+            <button class="res-tab-btn ${state.resTab==='not_started'?'active':''}" onclick="setResTab('not_started')">Not Started (${notStartedRes.length})</button>
+            <button class="res-tab-btn ${state.resTab==='pending'?'active':''}" onclick="setResTab('pending')">In Progress (${pendingRes.length})</button>
+            <button class="res-tab-btn ${state.resTab==='completed'?'active':''}" onclick="setResTab('completed')">Completed (${completedRes.length})</button>
           </div>
         </div>
         <button class="btn btn-primary" onclick="openResourceModal(state.filterSubject!=='all'?state.filterSubject:'english')">+ Add Resource</button>
@@ -2081,7 +2081,7 @@ function renderSubjectPage(subject){
         <div class="sb-left">
           <h3>
             ${escapeHtml(meta.label)} Score & Progress
-            <button class="btn btn-ghost btn-small" onclick="openScoreModal('${subject}')">⚙️ Configure Score & Notes</button>
+            <button class="btn btn-ghost btn-small" onclick="openScoreModal('${subject}')">️ Configure Score & Notes</button>
           </h3>
           <p>${escapeHtml(meta.tagline)}</p>
           <div style="margin-top:10px; width:290px;">
@@ -2112,7 +2112,7 @@ function renderSubjectPage(subject){
       
       ${sc.note ? `
         <div class="score-note-box" onmouseup="handleNoteSelection('${subject}')" title="长按拖动选中文字即可高亮！" style="width:100%;">
-          <span>💡</span>
+          
           <span>${parseInlineHighlight(subject, sc.note)}</span>
         </div>
       ` : ''}
@@ -2124,9 +2124,9 @@ function renderSubjectPage(subject){
     <div class="section" id="exercisesSection">
       <div class="section-head">
         <div style="display:flex; align-items:center; gap:12px;">
-          <h3>📝 ${escapeHtml(meta.label)} Exercise Bank <span class="count-pill">${ex.length}</span></h3>
+          <h3>${escapeHtml(meta.label)} Exercise Bank <span class="count-pill">${ex.length}</span></h3>
           ${overdueCount > 0 ? `
-            <button class="btn btn-warn btn-small" onclick="openOverdueModal()">⚠️ Overdue Reminders (${overdueCount})</button>
+            <button class="btn btn-warn btn-small" onclick="openOverdueModal()">Overdue Reminders (${overdueCount})</button>
           ` : ''}
         </div>
         <button class="btn btn-primary" onclick="openExerciseModal('${subject}')">+ Add Exercise</button>
@@ -2138,12 +2138,12 @@ function renderSubjectPage(subject){
     <div class="section" id="resourcesSection" style="margin-top:40px; padding-top:20px; border-top:2px dashed var(--line);">
       <div class="section-head">
         <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
-          <h3>📚 ${escapeHtml(meta.label)} Knowledge Resources (At Bottom) <span class="count-pill">${displayedRes.length}</span></h3>
+          <h3>${escapeHtml(meta.label)} Knowledge Resources (At Bottom) <span class="count-pill">${displayedRes.length}</span></h3>
           <div class="res-tab-bar">
             <button class="res-tab-btn ${state.resTab==='all'?'active':''}" onclick="setResTab('all')">All (${res.length})</button>
-            <button class="res-tab-btn ${state.resTab==='not_started'?'active':''}" onclick="setResTab('not_started')">⏳ Not Started (${notStartedRes.length})</button>
-            <button class="res-tab-btn ${state.resTab==='pending'?'active':''}" onclick="setResTab('pending')">📖 In Progress (${pendingRes.length})</button>
-            <button class="res-tab-btn ${state.resTab==='completed'?'active':''}" onclick="setResTab('completed')">✅ Completed (${completedRes.length})</button>
+            <button class="res-tab-btn ${state.resTab==='not_started'?'active':''}" onclick="setResTab('not_started')">Not Started (${notStartedRes.length})</button>
+            <button class="res-tab-btn ${state.resTab==='pending'?'active':''}" onclick="setResTab('pending')">In Progress (${pendingRes.length})</button>
+            <button class="res-tab-btn ${state.resTab==='completed'?'active':''}" onclick="setResTab('completed')">Completed (${completedRes.length})</button>
           </div>
         </div>
         <button class="btn btn-primary" onclick="openResourceModal('${subject}')">+ Add Resource</button>
@@ -2157,7 +2157,7 @@ function renderSubjectPage(subject){
 function resourceCard(r){
   const isDone = r.status === 'completed';
   const isNotStarted = r.status === 'not_started' || (r.startDate && r.startDate > todayISO());
-  const statusBadge = isDone ? `✅ Completed` : isNotStarted ? `⏳ Plan Start: ${r.startDate||'Not set'}` : `📖 In Progress`;
+  const statusBadge = isDone ? `Completed` : isNotStarted ? `Plan Start: ${r.startDate||'Not set'}` : `In Progress`;
 
   return `
     <div class="res-card ${isDone ? 'completed' : ''}" data-id="${r.id}" draggable="false" ondragstart="handleDragStart(event, 'resource', '${r.id}')" ondragend="handleDragEnd(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, '${r.id}')">
@@ -2171,7 +2171,7 @@ function resourceCard(r){
         </div>
         <div style="display:flex; gap:6px; align-items:center;">
           <button class="btn btn-ghost btn-small" style="padding:4px 10px;" onclick="openEditResourceModal('${r.id}')">Edit</button>
-          <button class="res-tool-btn delete" onclick="deleteResource('${r.id}')" title="Delete Resource">✕</button>
+          <button class="res-tool-btn delete" onclick="deleteResource('${r.id}')" title="Delete Resource"></button>
         </div>
       </div>
       <div class="res-path">${escapeHtml(r.path || '—')}</div>
@@ -2210,21 +2210,21 @@ function exerciseCard(e){
         <span class="ex-subject-tag" style="background:${customSubjects[e.subject]?customSubjects[e.subject].tint:'#EEF0F6'}; color:${customSubjects[e.subject]?customSubjects[e.subject].text:'var(--ink)'};">${customSubjects[e.subject]?customSubjects[e.subject].label:e.subject}</span>
         <div class="ex-body">
           <div class="ex-title-row">
-            ${e.pinned ? `<span style="font-size:11px; font-weight:800; color:#D97706; background:#FEF3C7; padding:2px 6px; border-radius:6px;">📌 Pinned</span>` : ''}
+            ${e.pinned ? `<span style="font-size:11px; font-weight:800; color:#D97706; background:#FEF3C7; padding:2px 6px; border-radius:6px;">Pinned</span>` : ''}
             ${getPriorityBadge(e.priority)}
             <div class="ex-title">${escapeHtml(e.title)}</div>
           </div>
           <div class="ex-meta">
-            ${e.chapter ? `<span>📑 ${escapeHtml(e.chapter)}</span>` : ''}
-            ${e.dueDate ? `<span style="${isMainOverdue?'color:#C81E1E; font-weight:700; background:#FDE8E8; padding:1px 6px; border-radius:4px;':''}">📅 Due ${e.dueDate} ${isMainOverdue?'(Overdue!)':''}</span>` : ''}
+            ${e.chapter ? `<span>${escapeHtml(e.chapter)}</span>` : ''}
+            ${e.dueDate ? `<span style="${isMainOverdue?'color:#C81E1E; font-weight:700; background:#FDE8E8; padding:1px 6px; border-radius:4px;':''}">Due ${e.dueDate} ${isMainOverdue?'(Overdue!)':''}</span>` : ''}
             ${stBadgeText}
           </div>
         </div>
         <span class="ex-status ${e.status}">${e.status === 'pending' ? 'Pending' : 'Completed'}</span>
         <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
-          <button class="ex-tool-btn pin ${e.pinned?'active':''}" onclick="togglePinExercise('${e.id}')" title="${e.pinned?'Unpin task':'Pin task to top'}">📌</button>
+          <button class="ex-tool-btn pin ${e.pinned?'active':''}" onclick="togglePinExercise('${e.id}')" title="${e.pinned?'Unpin task':'Pin task to top'}">Pin</button>
           <button class="btn btn-ghost btn-small" style="padding:4px 10px;" onclick="openEditExerciseModal('${e.id}')">Edit</button>
-          <button class="ex-tool-btn delete" onclick="deleteExercise('${e.id}')" title="Delete Exercise">✕</button>
+          <button class="ex-tool-btn delete" onclick="deleteExercise('${e.id}')" title="Delete Exercise"></button>
         </div>
       </div>
 
@@ -2239,7 +2239,7 @@ function exerciseCard(e){
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L19 7"/></svg>
                 </div>
                 <span class="st-text ${st.completed?'checked':''}">${escapeHtml(st.title)}</span>
-                ${st.dueDate ? `<span class="st-due ${isStOverdue?'overdue':''}">⏰ Due ${st.dueDate} ${isStOverdue?'(Overdue)':''}</span>` : ''}
+                ${st.dueDate ? `<span class="st-due ${isStOverdue?'overdue':''}">Due ${st.dueDate} ${isStOverdue?'(Overdue)':''}</span>` : ''}
               </div>
             </div>
           `;
@@ -2262,7 +2262,7 @@ function renderSearchResults(){
   return `
     <div class="page-head">
       <div>
-        <h2>🔍 Search Results</h2>
+        <h2> Search Results</h2>
         <p>Showing matches for "${escapeHtml(q)}" across all resources, exercises & sub-tasks</p>
       </div>
     </div>
@@ -2396,7 +2396,7 @@ function openOverdueModal(){
   });
 
   if(overdueItems.length === 0){
-    container.innerHTML = `<div style="text-align:center; padding:20px; color:#2F9155; font-weight:700;">🌟 No overdue items! Excellent time management.</div>`;
+    container.innerHTML = `<div style="text-align:center; padding:20px; color:#2F9155; font-weight:700;">No overdue items! Excellent time management.</div>`;
   } else {
     container.innerHTML = overdueItems.map(item => `
       <div style="padding:12px; border-radius:10px; background:#FDE8E8; border:1px solid #FBD5D5; display:flex; justify-content:space-between; align-items:center;">
@@ -2405,7 +2405,7 @@ function openOverdueModal(){
           <div style="font-size:14px; font-weight:700; color:#9B1C1C; margin-top:2px;">${escapeHtml(item.title)}</div>
         </div>
         <div style="text-align:right;">
-          <span style="font-size:12px; font-weight:800; color:#C81E1E;">⏰ Due ${item.dueDate}</span>
+          <span style="font-size:12px; font-weight:800; color:#C81E1E;">Due ${item.dueDate}</span>
           <br />
           <button class="btn btn-ghost btn-small" style="margin-top:4px; padding:2px 8px;" onclick="closeModal('overdueModalOverlay'); openEditExerciseModal('${item.id}');">Fix Due Date</button>
         </div>
@@ -2444,7 +2444,7 @@ function openEditResourceModal(id){
   const r = resources.find(x => x.id === id);
   if(!r) return;
   document.getElementById('editResId').value = r.id;
-  document.getElementById('resModalTitle').textContent = '✏️ Edit Resource Details';
+  document.getElementById('resModalTitle').textContent = 'Edit Resource Details';
   document.getElementById('resModalSubmitBtn').textContent = 'Save Changes';
   document.getElementById('resSubject').value = r.subject;
   document.getElementById('resTitle').value = r.title;
@@ -2499,7 +2499,7 @@ function openEditExerciseModal(id){
   const e = exercises.find(x => x.id === id);
   if(!e) return;
   document.getElementById('editExId').value = e.id;
-  document.getElementById('exModalTitle').textContent = '✏️ Edit Exercise & Subtasks';
+  document.getElementById('exModalTitle').textContent = 'Edit Exercise & Subtasks';
   document.getElementById('exModalSubmitBtn').textContent = 'Save Changes';
   document.getElementById('exSubject').value = e.subject;
   document.getElementById('exTitle').value = e.title;
@@ -2523,7 +2523,7 @@ function addModalSubtaskRow(title = '', dueDate = ''){
   div.innerHTML = `
     <input type="text" placeholder="Subtask description..." value="${escapeHtml(title)}" class="modal-st-title" />
     <input type="date" value="${dueDate}" class="modal-st-due" />
-    <button class="btn btn-ghost btn-small" style="padding:4px 8px; color:#C24545;" onclick="this.parentElement.remove()">✕</button>
+    <button class="btn btn-ghost btn-small" style="padding:4px 8px; color:#C24545;" onclick="this.parentElement.remove()"></button>
   `;
   container.appendChild(div);
 }
@@ -2605,7 +2605,7 @@ function addScoreModuleRow(name = '', score = 0, duration = ''){
     <input type="text" placeholder="Module Name (e.g. Reading)" value="${escapeHtml(name)}" class="mod-name" />
     <input type="number" placeholder="Points" value="${score}" class="mod-score" />
     <input type="text" placeholder="Est. Time (e.g. 45 mins)" value="${escapeHtml(duration)}" class="mod-dur" />
-    <button class="btn btn-ghost btn-small" style="padding:4px 8px; color:#C24545;" onclick="this.parentElement.remove()">✕</button>
+    <button class="btn btn-ghost btn-small" style="padding:4px 8px; color:#C24545;" onclick="this.parentElement.remove()"></button>
   `;
   container.appendChild(div);
 }
@@ -2642,5 +2642,5 @@ document.querySelectorAll('.modal-overlay').forEach(ov=>{
 populateSubjectDropdowns();
 render();
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a154846cd8b7c02f',t:'MTc4MzA2NzMxMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

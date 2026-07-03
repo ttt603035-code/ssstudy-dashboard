@@ -285,7 +285,7 @@
     color:var(--ink-soft);
   }
 
-  /* Sidebar Subject Progress Bars Section */
+  /* Sidebar Subject Progress Bars Section & Overall Summary directly below it */
   .side-progress-section{
     background:#FAFBFC;
     border:1px solid var(--line);
@@ -325,7 +325,7 @@
     transition:width .3s ease;
   }
 
-  /* Total Progress Box */
+  /* Total Progress Box directly under subject programs */
   .side-progress{
     margin-top:6px;
     background:linear-gradient(155deg,#F6F4FF 0%,#F2F7FF 100%);
@@ -497,21 +497,21 @@
   .priority-medium{ background:#FEF3C7; color:#B45309; border:1px solid #FDE68A; }
   .priority-low{ background:#E1EFFE; color:#1E429F; border:1px solid #C3D9FF; }
 
-  /* Drag handle restricted: uses SVG grip and completely prevents text selection */
+  /* Drag handle restricted to ⠿ icon area only */
   .drag-handle{
     cursor:grab;
     color:var(--ink-faint);
-    padding:4px 8px;
+    font-size:17px;
+    padding:4px 10px;
     user-select:none;
     -webkit-user-select:none;
-    -moz-user-select:none;
-    -webkit-touch-callout:none;
-    touch-action:none;
     display:inline-flex;
     align-items:center;
     justify-content:center;
     border-radius:6px;
     transition:background .12s ease, color .12s ease;
+    touch-action:none;
+    -webkit-touch-callout:none;
   }
   .drag-handle:hover{ background:#EEF0F6; color:var(--ink); }
   .drag-handle:active{ cursor:grabbing; color:var(--ink); background:#E2E6F0; }
@@ -878,6 +878,20 @@
     height:100%;
     border-radius:5px;
     transition:width .3s ease;
+  }
+
+  /* Overall Summary inside Dashboard Overview under subject programs */
+  .overall-summary-box{
+    margin-top:20px;
+    padding:16px 18px;
+    background:linear-gradient(135deg, #F4F6FA 0%, #EFF1F6 100%);
+    border:1px solid #DDE2F3;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+    flex-wrap:wrap;
   }
 
   /* Specific Subject Header Score Banner */
@@ -1479,96 +1493,186 @@ function removeInlineHighlight(subj, highlightedWord){
   render();
 }
 
-/* ============ RESTRICTED DRAG AND DROP HANDLERS (SVG Grip ONLY) ============ */
-function enableDrag(e, handleEl){
-  // Stop propagation to prevent touch text selection dropdowns on iPad / Safari
-  if(e && e.preventDefault && e.type.indexOf('touch') > -1) e.preventDefault();
-  const card = handleEl.closest('.res-card, .ex-card');
-  if(card){
-    card.setAttribute('draggable', 'true');
-    card._dragEnabledByHandle = true;
-  }
+/* ============ TOUCH DRAG AND DROP (iPad compatible) ============ */
+let touchDragCard = null;
+let touchDragType = null;
+let touchDragId = null;
+let touchClone = null;
+let touchOffsetX = 0;
+let touchOffsetY = 0;
+let touchLastTarget = null;
+let touchHoldTimer = null;
+
+function initTouchDrag(handleEl, type, id) {
+  handleEl.addEventListener('touchstart', function(e) {
+    e.stopPropagation();
+    const card = handleEl.closest('.res-card, .ex-card');
+    if (!card) return;
+
+    const touch = e.touches[0];
+
+    // Haptic-like: wait 120ms then start drag (filters out scrolls)
+    touchHoldTimer = setTimeout(() => {
+      touchDragCard = card;
+      touchDragType = type;
+      touchDragId = id;
+
+      const rect = card.getBoundingClientRect();
+      touchOffsetX = touch.clientX - rect.left;
+      touchOffsetY = touch.clientY - rect.top;
+
+      // Create floating clone
+      touchClone = card.cloneNode(true);
+      touchClone.style.cssText = `
+        position: fixed;
+        top: ${rect.top}px;
+        left: ${rect.left}px;
+        width: ${rect.width}px;
+        z-index: 9999;
+        opacity: 0.85;
+        pointer-events: none;
+        border-radius: 14px;
+        box-shadow: 0 12px 40px rgba(0,0,0,0.22);
+        transform: scale(1.03);
+        transition: transform 0.1s ease;
+      `;
+      document.body.appendChild(touchClone);
+      card.style.opacity = '0.35';
+    }, 120);
+
+  }, { passive: true });
+
+  handleEl.addEventListener('touchmove', function(e) {
+    if (!touchDragCard) return;
+    e.preventDefault();
+
+    const touch = e.touches[0];
+
+    // Move clone
+    if (touchClone) {
+      touchClone.style.left = (touch.clientX - touchOffsetX) + 'px';
+      touchClone.style.top  = (touch.clientY - touchOffsetY) + 'px';
+    }
+
+    // Find card under finger
+    touchClone.style.display = 'none';
+    const el = document.elementFromPoint(touch.clientX, touch.clientY);
+    touchClone.style.display = '';
+
+    const overCard = el ? el.closest('.res-card, .ex-card') : null;
+
+    if (touchLastTarget && touchLastTarget !== overCard) {
+      touchLastTarget.classList.remove('drag-over');
+    }
+    if (overCard && overCard !== touchDragCard) {
+      overCard.classList.add('drag-over');
+      touchLastTarget = overCard;
+    } else {
+      touchLastTarget = null;
+    }
+  }, { passive: false });
+
+  handleEl.addEventListener('touchend', function(e) {
+    clearTimeout(touchHoldTimer);
+    if (!touchDragCard) return;
+
+    const touch = e.changedTouches[0];
+
+    // Find drop target
+    if (touchClone) touchClone.style.display = 'none';
+    const el = document.elementFromPoint(touch.clientX, touch.clientY);
+    if (touchClone) touchClone.style.display = '';
+
+    const dropCard = el ? el.closest('.res-card, .ex-card') : null;
+
+    // Clean up visuals
+    if (touchClone) { touchClone.remove(); touchClone = null; }
+    document.querySelectorAll('.res-card, .ex-card').forEach(c => {
+      c.classList.remove('drag-over');
+      c.style.opacity = '';
+    });
+
+    // Reorder if valid drop
+    if (dropCard && dropCard !== touchDragCard) {
+      const dropId = dropCard.getAttribute('data-id');
+      if (dropId) {
+        if (touchDragType === 'resource') {
+          const si = resources.findIndex(x => x.id === touchDragId);
+          const ti = resources.findIndex(x => x.id === dropId);
+          if (si > -1 && ti > -1) { const [r] = resources.splice(si,1); resources.splice(ti,0,r); }
+        } else if (touchDragType === 'exercise') {
+          const si = exercises.findIndex(x => x.id === touchDragId);
+          const ti = exercises.findIndex(x => x.id === dropId);
+          if (si > -1 && ti > -1) { const [r] = exercises.splice(si,1); exercises.splice(ti,0,r); }
+        }
+        saveStateToStorage();
+        render();
+      }
+    }
+
+    touchDragCard = null; touchDragType = null; touchDragId = null; touchLastTarget = null;
+  }, { passive: true });
+
+  handleEl.addEventListener('touchcancel', function() {
+    clearTimeout(touchHoldTimer);
+    if (touchClone) { touchClone.remove(); touchClone = null; }
+    document.querySelectorAll('.res-card, .ex-card').forEach(c => {
+      c.classList.remove('drag-over');
+      c.style.opacity = '';
+    });
+    touchDragCard = null; touchDragType = null; touchDragId = null;
+  }, { passive: true });
 }
 
+// Legacy mouse drag (desktop fallback) — kept minimal
+function enableDrag(e, handleEl){
+  e.stopPropagation();
+  const card = handleEl.closest('.res-card, .ex-card');
+  if(card){ card.setAttribute('draggable', 'true'); card._dragEnabledByHandle = true; }
+}
 function disableDrag(e, handleEl){
   const card = handleEl.closest('.res-card, .ex-card');
-  if(card){
-    card.setAttribute('draggable', 'false');
-    card._dragEnabledByHandle = false;
-  }
+  if(card){ card.setAttribute('draggable', 'false'); card._dragEnabledByHandle = false; }
 }
-
 function handleDragStart(e, type, id){
   const card = e.currentTarget;
-  if(!card._dragEnabledByHandle){
-    e.preventDefault();
-    return false;
-  }
-  dragSrcEl = card;
-  dragType = type;
+  if(!card._dragEnabledByHandle){ e.preventDefault(); return false; }
+  dragSrcEl = card; dragType = type;
   e.dataTransfer.effectAllowed = 'move';
   e.dataTransfer.setData('text/plain', id);
-  setTimeout(() => { card.style.opacity = '0.45'; card.style.transform = 'scale(0.98)'; }, 0);
+  const rect = card.getBoundingClientRect();
+  e.dataTransfer.setDragImage(card, e.clientX - rect.left, e.clientY - rect.top);
+  setTimeout(() => { card.style.opacity = '0.45'; }, 0);
 }
-
 function handleDragEnd(e){
-  const card = e.currentTarget;
-  card.style.opacity = '';
-  card.style.transform = '';
-  card.setAttribute('draggable', 'false');
-  card._dragEnabledByHandle = false;
-  document.querySelectorAll('.res-card, .ex-card').forEach(el => {
-    el.classList.remove('drag-over');
-  });
+  e.currentTarget.style.opacity = '';
+  e.currentTarget.setAttribute('draggable', 'false');
+  e.currentTarget._dragEnabledByHandle = false;
+  document.querySelectorAll('.res-card, .ex-card').forEach(el => el.classList.remove('drag-over'));
 }
-
 function handleDragOver(e){
   e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
   const card = e.target.closest('.res-card, .ex-card');
   if(card && card !== dragSrcEl){
-    document.querySelectorAll('.res-card, .ex-card').forEach(el => {
-      if(el !== card) el.classList.remove('drag-over');
-    });
+    document.querySelectorAll('.res-card, .ex-card').forEach(el => { if(el!==card) el.classList.remove('drag-over'); });
     card.classList.add('drag-over');
   }
   return false;
 }
-
 function handleDragLeave(e){
-  const card = e.currentTarget;
-  if(!card.contains(e.relatedTarget)){
-    card.classList.remove('drag-over');
-  }
+  if(!e.currentTarget.contains(e.relatedTarget)) e.currentTarget.classList.remove('drag-over');
 }
-
 function handleDrop(e, targetId){
-  e.preventDefault();
-  e.stopPropagation();
+  e.preventDefault(); e.stopPropagation();
   const srcId = e.dataTransfer.getData('text/plain');
-
-  document.querySelectorAll('.res-card, .ex-card').forEach(el => {
-    el.classList.remove('drag-over');
-    el.style.opacity = '';
-    el.style.transform = '';
-  });
-
-  if (srcId === targetId) return false;
-
-  if (dragType === 'resource') {
-    const srcIdx = resources.findIndex(x => x.id === srcId);
-    const tgtIdx = resources.findIndex(x => x.id === targetId);
-    if(srcIdx > -1 && tgtIdx > -1){
-      const [removed] = resources.splice(srcIdx, 1);
-      resources.splice(tgtIdx, 0, removed);
-    }
-  } else if (dragType === 'exercise') {
-    const srcIdx = exercises.findIndex(x => x.id === srcId);
-    const tgtIdx = exercises.findIndex(x => x.id === targetId);
-    if(srcIdx > -1 && tgtIdx > -1){
-      const [removed] = exercises.splice(srcIdx, 1);
-      exercises.splice(tgtIdx, 0, removed);
-    }
+  document.querySelectorAll('.res-card, .ex-card').forEach(el => { el.classList.remove('drag-over'); el.style.opacity=''; });
+  if(srcId===targetId) return false;
+  if(dragType==='resource'){
+    const si=resources.findIndex(x=>x.id===srcId), ti=resources.findIndex(x=>x.id===targetId);
+    if(si>-1&&ti>-1){ const [r]=resources.splice(si,1); resources.splice(ti,0,r); }
+  } else if(dragType==='exercise'){
+    const si=exercises.findIndex(x=>x.id===srcId), ti=exercises.findIndex(x=>x.id===targetId);
+    if(si>-1&&ti>-1){ const [r]=exercises.splice(si,1); exercises.splice(ti,0,r); }
   }
   render();
   return false;
@@ -1748,6 +1852,7 @@ function render(){
   const main = document.getElementById('mainContent');
   if(state.search){
     main.innerHTML = renderSearchResults();
+    initAllTouchHandles();
     return;
   }
   if(state.view === 'dashboard'){
@@ -1755,6 +1860,25 @@ function render(){
   } else {
     main.innerHTML = renderSubjectPage(state.view);
   }
+  initAllTouchHandles();
+}
+
+function initAllTouchHandles(){
+  // Bind touch drag to every drag handle after DOM update
+  document.querySelectorAll('.res-card').forEach(card => {
+    const handle = card.querySelector('.drag-handle');
+    if(handle && !handle._touchBound){
+      handle._touchBound = true;
+      initTouchDrag(handle, 'resource', card.getAttribute('data-id'));
+    }
+  });
+  document.querySelectorAll('.ex-card').forEach(card => {
+    const handle = card.querySelector('.drag-handle');
+    if(handle && !handle._touchBound){
+      handle._touchBound = true;
+      initTouchDrag(handle, 'exercise', card.getAttribute('data-id'));
+    }
+  });
 }
 
 function renderFilterBar(){
@@ -1819,11 +1943,6 @@ function renderDashboardHome(){
   if(state.resTab === 'pending') displayedRes = pendingRes;
   if(state.resTab === 'completed') displayedRes = completedRes;
 
-  displayedRes.sort((a,b) => {
-    if (a.status !== b.status) return a.status === 'completed' ? 1 : -1;
-    return 0;
-  });
-
   const showResources = state.filterType === 'all' || state.filterType === 'resources';
   const showExercises = state.filterType === 'all' || state.filterType === 'exercises';
 
@@ -1831,12 +1950,6 @@ function renderDashboardHome(){
   if(state.filterSubject !== 'all') ex = ex.filter(e => e.subject === state.filterSubject);
   if(state.filterPriority !== 'all') ex = ex.filter(e => e.priority === state.filterPriority);
   if(state.filterStatus !== 'all') ex = ex.filter(e => e.status === state.filterStatus);
-
-  ex.sort((a,b) => {
-    if(a.pinned !== b.pinned) return b.pinned ? 1 : -1;
-    if(a.status !== b.status) return a.status === 'pending' ? -1 : 1;
-    return 0;
-  });
 
   const overdueCount = getOverdueCount();
 
@@ -1955,11 +2068,6 @@ function renderSubjectPage(subject){
   if(state.resTab === 'pending') displayedRes = pendingRes;
   if(state.resTab === 'completed') displayedRes = completedRes;
 
-  displayedRes.sort((a,b) => {
-    if (a.status !== b.status) return a.status === 'completed' ? 1 : -1;
-    return 0;
-  });
-
   const overdueCount = getOverdueCount();
 
   return `
@@ -2045,23 +2153,17 @@ function renderSubjectPage(subject){
   `;
 }
 
-/* ---- Draggable Resource Card (Restricted Handle SVG Grip) ---- */
+/* ---- Draggable Resource Card (Restricted Handle) ---- */
 function resourceCard(r){
   const isDone = r.status === 'completed';
   const isNotStarted = r.status === 'not_started' || (r.startDate && r.startDate > todayISO());
   const statusBadge = isDone ? `✅ Completed` : isNotStarted ? `⏳ Plan Start: ${r.startDate||'Not set'}` : `📖 In Progress`;
 
   return `
-    <div class="res-card ${isDone ? 'completed' : ''}" draggable="false" ondragstart="handleDragStart(event, 'resource', '${r.id}')" ondragend="handleDragEnd(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, '${r.id}')">
+    <div class="res-card ${isDone ? 'completed' : ''}" data-id="${r.id}" draggable="false" ondragstart="handleDragStart(event, 'resource', '${r.id}')" ondragend="handleDragEnd(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, '${r.id}')">
       <div class="res-top">
         <div class="res-title-wrap">
-          <span class="drag-handle" title="按住拖拽排序" onmousedown="enableDrag(event, this)" onmouseup="disableDrag(event, this)" ontouchstart="enableDrag(event, this)" ontouchend="disableDrag(event, this)">
-            <svg width="14" height="18" viewBox="0 0 14 18" fill="currentColor">
-              <circle cx="4" cy="4" r="1.8"/><circle cx="10" cy="4" r="1.8"/>
-              <circle cx="4" cy="9" r="1.8"/><circle cx="10" cy="9" r="1.8"/>
-              <circle cx="4" cy="14" r="1.8"/><circle cx="10" cy="14" r="1.8"/>
-            </svg>
-          </span>
+          <span class="drag-handle" title="按住此处拖动排序" onmousedown="enableDrag(event, this)" onmouseup="disableDrag(event, this)">⠿</span>
           <div class="res-check ${isDone ? 'checked' : ''}" onclick="toggleResourceStatus('${r.id}')" title="Click to toggle completed status">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L19 7"/></svg>
           </div>
@@ -2085,7 +2187,7 @@ function resourceCard(r){
   `;
 }
 
-/* ---- Draggable Exercise Card (Restricted Handle SVG Grip) ---- */
+/* ---- Draggable Exercise Card (Restricted Handle) ---- */
 function exerciseCard(e){
   const subtasks = e.subtasks || [];
   const totalSt = subtasks.length;
@@ -2099,15 +2201,9 @@ function exerciseCard(e){
   }
 
   return `
-    <div class="ex-card ${checked?'completed':''} ${e.pinned?'pinned':''}" draggable="false" ondragstart="handleDragStart(event, 'exercise', '${e.id}')" ondragend="handleDragEnd(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, '${e.id}')">
+    <div class="ex-card ${checked?'completed':''} ${e.pinned?'pinned':''}" data-id="${e.id}" draggable="false" ondragstart="handleDragStart(event, 'exercise', '${e.id}')" ondragend="handleDragEnd(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, '${e.id}')">
       <div class="ex-row">
-        <span class="drag-handle" title="按住拖拽排序" onmousedown="enableDrag(event, this)" onmouseup="disableDrag(event, this)" ontouchstart="enableDrag(event, this)" ontouchend="disableDrag(event, this)">
-          <svg width="14" height="18" viewBox="0 0 14 18" fill="currentColor">
-            <circle cx="4" cy="4" r="1.8"/><circle cx="10" cy="4" r="1.8"/>
-            <circle cx="4" cy="9" r="1.8"/><circle cx="10" cy="9" r="1.8"/>
-            <circle cx="4" cy="14" r="1.8"/><circle cx="10" cy="14" r="1.8"/>
-          </svg>
-        </span>
+        <span class="drag-handle" title="按住此处拖动排序" onmousedown="enableDrag(event, this)" onmouseup="disableDrag(event, this)">⠿</span>
         <div class="ex-check ${checked?'checked':''}" onclick="toggleExerciseMain('${e.id}')" title="Click to toggle main status">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L19 7"/></svg>
         </div>
